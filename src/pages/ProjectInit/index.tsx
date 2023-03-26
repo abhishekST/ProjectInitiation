@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import {
   Box,
   Stepper,
@@ -14,6 +14,7 @@ import {
   InputLabel,
   Select
 } from '@mui/material'
+import { makeStyles } from 'tss-react/mui'
 import {
   East,
   West,
@@ -29,10 +30,16 @@ import StepConnector, {
   stepConnectorClasses
 } from '@mui/material/StepConnector'
 
-// import clsx from 'clsx'
-import { ClientInformation } from './ClientInformation'
-import { ProjectOverAllSummary } from './ProjectOverAllSummary'
-import { TimelineAndFunding } from './TimelineAndFunding'
+import clsx from 'clsx'
+const ProjectOverAllSummary = React.lazy(
+  async () => await import('./ProjectOverAllSummary')
+)
+const ClientInformation = React.lazy(
+  async () => await import('./ClientInformation')
+)
+const TimelineAndFunding = React.lazy(
+  async () => await import('./TimelineAndFunding')
+)
 
 const steps = [
   {
@@ -80,6 +87,24 @@ const QontoConnector = styled(StepConnector)(({ theme }) => ({
 }))
 
 export const ProjectInitiation = (): JSX.Element => {
+  const useStyles = makeStyles()(() => ({
+    root: {
+      height: '30px',
+      width: '30px',
+      backgroundColor: '#eaeaf0',
+      padding: 3,
+      display: 'inline-block',
+      borderRadius: '50%'
+    },
+    active: {
+      backgroundColor: 'blue',
+      color: 'white'
+    },
+    completed: {
+      backgroundColor: 'green',
+      color: 'green'
+    }
+  }))
   const [age, setAge] = React.useState('')
   const [currentStep, setCurrentStep] = React.useState(1)
   const [isStep1Completed, setIsStep1Completed] = React.useState(false)
@@ -105,14 +130,16 @@ export const ProjectInitiation = (): JSX.Element => {
     setCurrentStep((prevActiveStep) => prevActiveStep - 1)
   }
 
+  const { classes } = useStyles()
+
   const PermIdentityOutlinedIcon = (props: any): JSX.Element => {
-    // const { active, completed } = props
+    const { active, completed } = props
     return (
       <div
-        // className={clsx(classes.root, {
-        //   [classes.active]: active,
-        //   [classes.completed]: completed
-        // })}
+      className={clsx(classes.root, {
+        [classes.active]: active,
+        [classes.completed]: completed
+      })}
       >
         {<PermIdentityOutlined />}
       </div>
@@ -120,13 +147,13 @@ export const ProjectInitiation = (): JSX.Element => {
   }
 
   const RestorePageOutlinedIcon = (props: any): JSX.Element => {
-    // const { active, completed } = props
+    const { active, completed } = props
     return (
       <div
-        // className={clsx(classes.root, {
-        //   [classes.active]: active,
-        //   [classes.completed]: completed
-        // })}
+      className={clsx(classes.root, {
+        [classes.active]: active,
+        [classes.completed]: completed
+      })}
       >
         <RestorePageOutlined />
       </div>
@@ -134,22 +161,20 @@ export const ProjectInitiation = (): JSX.Element => {
   }
 
   const AlarmOnOutlinedIcon = (props: any): JSX.Element => {
-    // const { active, completed } = props
+    const { active, completed } = props
     return (
       <div
-        // className={clsx(classes.root, {
-        //   [classes.active]: active,
-        //   [classes.completed]: completed
-        // })}
+      className={clsx(classes.root, {
+        [classes.active]: active,
+        [classes.completed]: completed
+      })}
       >
         <AlarmOnOutlined />
       </div>
     )
   }
 
-  const resetFormData = (): void => {
-
-  }
+  const resetFormData = (): void => {}
 
   return (
     <div>
@@ -179,7 +204,9 @@ export const ProjectInitiation = (): JSX.Element => {
               id="demo-select-small"
               value={age}
               label="Draft"
-              onChange={(e) => { setAge(e.target.value) }}
+              onChange={(e) => {
+                setAge(e.target.value)
+              }}
               sx={{ height: '38px', width: '120px' }}
             >
               <MenuItem value="draft">Draft</MenuItem>
@@ -203,24 +230,6 @@ export const ProjectInitiation = (): JSX.Element => {
           alternativeLabel
           connector={<QontoConnector />}
         >
-          {/* {
-                        steps.map((obj, index) => {
-                            // const stepProps = {};
-                            const labelProps = {};
-                            //  labelProps.error = true;
-                            if (isStepOptional(index)) {
-                                labelProps.optional = (
-                                    <>
-                                        <Typography sx={{ fontWeight: 'bold', color: 'black' }} variant="subtitle2">{obj.detailStep}</Typography>
-                                        <Chip sx={{ borderRadius: 2 }} label={obj.chipLable} size="small" color={obj.chipColor} variant="outlined" />
-                                    </>
-
-                                );
-                            }
-                            return returnStep(obj, labelProps);
-                        })
-                    } */}
-
           <Step
             sx={{ color: isStep1Completed ? 'green' : 'green' }}
             completed={isStep1Completed}
@@ -305,7 +314,9 @@ export const ProjectInitiation = (): JSX.Element => {
           </Step>
           <Step completed={isStep3Completed} key={steps[2].step}>
             <StepLabel
-              StepIconComponent={!isStep3Completed ? AlarmOnOutlinedIcon : undefined}
+              StepIconComponent={
+                !isStep3Completed ? AlarmOnOutlinedIcon : undefined
+              }
               optional={
                 <>
                   <Typography
@@ -345,9 +356,11 @@ export const ProjectInitiation = (): JSX.Element => {
             </StepLabel>
           </Step>
         </Stepper>
-        {currentStep === 1 && <ClientInformation />}
-        {currentStep === 2 && <ProjectOverAllSummary />}
-        {currentStep === 3 && <TimelineAndFunding />}
+        <Suspense>
+          {currentStep === 1 && <ClientInformation />}
+          {currentStep === 2 && <ProjectOverAllSummary />}
+          {currentStep === 3 && <TimelineAndFunding />}
+        </Suspense>
       </Box>
 
       <Paper

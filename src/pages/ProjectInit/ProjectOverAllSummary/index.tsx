@@ -80,7 +80,7 @@ function getStyles (_name: string, _personName: any, theme: Theme) {
 // ? theme.typography.fontWeightRegular
 // : theme.typography.fontWeightMedium,
 
-export const ProjectOverAllSummary = (): JSX.Element => {
+const ProjectOverAllSummary = (): JSX.Element => {
   const { phaseData } = projectInitiaonMock
   const projectOverAllSummary = useSelector(
     (state: RootState) => state.projectOverAllSummary
@@ -831,3 +831,5 @@ export const ProjectOverAllSummary = (): JSX.Element => {
     </>
   )
 }
+
+export default ProjectOverAllSummary

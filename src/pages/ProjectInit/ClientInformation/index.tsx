@@ -62,7 +62,7 @@ function getStyles (_name: string, _personName: any, theme: Theme) {
 // ? theme.typography.fontWeightRegular
 // : theme.typography.fontWeightMedium,
 
-export const ClientInformation = (_props: any): JSX.Element => {
+const ClientInformation = (_props: any): JSX.Element => {
   const clientInfo = useSelector((state: RootState) => state.clientInfo)
   const dispatch = useDispatch()
   const { phaseData } = projectInitiaonMock
@@ -370,3 +370,5 @@ export const ClientInformation = (_props: any): JSX.Element => {
     </>
   )
 }
+
+export default ClientInformation

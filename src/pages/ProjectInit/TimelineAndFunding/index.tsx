@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { type RootState } from '../../../store'
 import { changeBillingFrequency, changeEndDate, changeNoOfDays, changeProjectBilling, changeStartDate, changeTotalApprovedHours } from './reducer'
 
-export const TimelineAndFunding = (): JSX.Element => {
+const TimelineAndFunding = (): JSX.Element => {
   const timelineAndFunding = useSelector((state: RootState) => state.timelineAndFunding)
   const dispatch = useDispatch()
 
@@ -241,3 +241,5 @@ export const TimelineAndFunding = (): JSX.Element => {
     </>
   )
 }
+
+export default TimelineAndFunding
