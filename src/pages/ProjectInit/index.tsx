@@ -22,15 +22,17 @@ import {
   PermIdentityOutlined,
   RestorePageOutlined,
   AlarmOnOutlined,
-  ArrowForwardIos,
-  Refresh
+  ArrowForwardIos
 } from '@mui/icons-material'
 import { styled } from '@mui/system'
 import StepConnector, {
   stepConnectorClasses
 } from '@mui/material/StepConnector'
+import RefreshIcon from '@mui/icons-material/Refresh'
 
 import clsx from 'clsx'
+import { useDispatch } from 'react-redux'
+import { revertAll } from '../../store'
 const ProjectOverAllSummary = React.lazy(
   async () => await import('./ProjectOverAllSummary')
 )
@@ -87,6 +89,7 @@ const QontoConnector = styled(StepConnector)(({ theme }) => ({
 }))
 
 export const ProjectInitiation = (): JSX.Element => {
+  const dispatch = useDispatch()
   const useStyles = makeStyles()(() => ({
     root: {
       height: '30px',
@@ -136,10 +139,10 @@ export const ProjectInitiation = (): JSX.Element => {
     const { active, completed } = props
     return (
       <div
-      className={clsx(classes.root, {
-        [classes.active]: active,
-        [classes.completed]: completed
-      })}
+        className={clsx(classes.root, {
+          [classes.active]: active,
+          [classes.completed]: completed
+        })}
       >
         {<PermIdentityOutlined />}
       </div>
@@ -150,10 +153,10 @@ export const ProjectInitiation = (): JSX.Element => {
     const { active, completed } = props
     return (
       <div
-      className={clsx(classes.root, {
-        [classes.active]: active,
-        [classes.completed]: completed
-      })}
+        className={clsx(classes.root, {
+          [classes.active]: active,
+          [classes.completed]: completed
+        })}
       >
         <RestorePageOutlined />
       </div>
@@ -164,17 +167,20 @@ export const ProjectInitiation = (): JSX.Element => {
     const { active, completed } = props
     return (
       <div
-      className={clsx(classes.root, {
-        [classes.active]: active,
-        [classes.completed]: completed
-      })}
+        className={clsx(classes.root, {
+          [classes.active]: active,
+          [classes.completed]: completed
+        })}
       >
         <AlarmOnOutlined />
       </div>
     )
   }
 
-  const resetFormData = (): void => {}
+  const resetFormData = (): void => {
+    dispatch(revertAll())
+    setCurrentStep(1)
+  }
 
   return (
     <div>
@@ -214,8 +220,8 @@ export const ProjectInitiation = (): JSX.Element => {
           </FormControl>
           <Box sx={{ display: 'flex', mb: 1 }}>
             <Button onClick={resetFormData} color="primary">
-              <Refresh />
-              {/* <Link to="/about">Reset Form</Link> */}
+              <RefreshIcon />
+              <u>RESET FORM</u>
             </Button>
           </Box>
         </Box>

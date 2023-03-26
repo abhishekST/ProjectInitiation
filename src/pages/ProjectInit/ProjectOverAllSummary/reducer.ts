@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
+import { revertAll } from '../../../store'
 
 export interface AccountManager {
   id: number
@@ -50,6 +51,7 @@ const initialState: ProjectOverallSummary = {
 export const projectOverAllSummarySlice = createSlice({
   name: 'projectOverallSummary',
   initialState,
+  extraReducers: (builder) => builder.addCase(revertAll, () => initialState),
   reducers: {
     changeProjectName: (
       state,

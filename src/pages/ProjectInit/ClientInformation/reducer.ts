@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
+import { revertAll } from '../../../store'
 
 export interface client {
   id: number
@@ -26,6 +27,7 @@ const initialState: ClientInformationState = {
 export const clientInformationSlice = createSlice({
   name: 'clientInformation',
   initialState,
+  extraReducers: (builder) => builder.addCase(revertAll, () => initialState),
   reducers: {
     changeClient: (
       state,

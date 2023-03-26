@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
+import { revertAll } from '../../../store'
 
 export interface TimelineAndFunding {
   startDate: Date | null
@@ -22,6 +23,7 @@ const initialState: TimelineAndFunding = {
 export const timelineAndFundingSlice = createSlice({
   name: 'timelin2023eAndFunding',
   initialState,
+  extraReducers: (builder) => builder.addCase(revertAll, () => initialState),
   reducers: {
     changeStartDate: (
       state,
