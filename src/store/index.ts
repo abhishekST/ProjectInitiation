@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit'
 import ClientInfoReducer from '../pages/ProjectInit/ClientInformation/reducer'
 import ProjectOverAllSummaryReducer from '../pages/ProjectInit/ProjectOverAllSummary/reducer'
+import TimelineAndFundingReducer from '../pages/ProjectInit/TimelineAndFunding/reducer'
 
 export const store = configureStore({
   reducer: {
     clientInfo: ClientInfoReducer,
-    projectOverAllSummary: ProjectOverAllSummaryReducer
+    projectOverAllSummary: ProjectOverAllSummaryReducer,
+    timelineAndFunding: TimelineAndFundingReducer
   }
 })
 

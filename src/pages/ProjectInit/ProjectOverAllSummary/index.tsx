@@ -786,6 +786,9 @@ export const ProjectOverAllSummary = (): JSX.Element => {
               row
               aria-labelledby="demo-row-radio-buttons-group-label"
               name="row-radio-buttons-group"
+              onChange={(e) => {
+                dispatch(changeProjectSow({ projectSow: e.target.value }))
+              }}
             >
               <Box
                 sx={{
@@ -800,9 +803,6 @@ export const ProjectOverAllSummary = (): JSX.Element => {
                 <FormControlLabel
                   value="yes"
                   checked={projectOverAllSummary.projectSow === 'yes'}
-                  onChange={() => {
-                    dispatch(changeProjectSow({ projectSow: 'yes' }))
-                  }}
                   control={<Radio />}
                   label="Yes"
                 />
@@ -820,9 +820,6 @@ export const ProjectOverAllSummary = (): JSX.Element => {
                 <FormControlLabel
                   value="no"
                   checked={projectOverAllSummary.projectSow === 'no'}
-                  onChange={() => {
-                    dispatch(changeProjectSow({ projectSow: 'no' }))
-                  }}
                   control={<Radio />}
                   label="No"
                 />
