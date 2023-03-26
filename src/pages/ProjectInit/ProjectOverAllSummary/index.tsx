@@ -693,50 +693,46 @@ const ProjectOverAllSummary = (): JSX.Element => {
               MenuProps={MenuProps}
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selected.map(
-                    (
-                      value: ProjectManager
-                    ) => (
-                      <Chip
-                        avatar={
-                          <Avatar
-                            sx={{
-                              width: 24,
-                              height: 24,
-                              bgcolor: deepOrange[400]
-                            }}
-                          >
-                            N
-                          </Avatar>
-                        }
-                        key={value.id}
-                        variant="outlined"
-                        clickable
-                        // onDelete={(e) => {
-                        //   handleDelete(e, value, 'projectManagers')
-                        // }}
-                        deleteIcon={
-                          <CancelIcon
-                            onMouseDown={(event) => {
-                              event.stopPropagation()
-                            }}
-                          />
-                        }
-                        // onClick={(_e) => {
-                        //   handleDelete()
-                        // }}
-                        sx={{ border: 'none' }}
-                        label={
-                          <div>
-                            <Typography sx={{ mb: -1 }}>{value.name}</Typography>
-                            <Typography variant="caption">
-                              {value.email}
-                            </Typography>
-                          </div>
-                        }
-                      />
-                    )
-                  )}
+                  {selected.map((value: ProjectManager) => (
+                    <Chip
+                      avatar={
+                        <Avatar
+                          sx={{
+                            width: 24,
+                            height: 24,
+                            bgcolor: deepOrange[400]
+                          }}
+                        >
+                          N
+                        </Avatar>
+                      }
+                      key={value.id}
+                      variant="outlined"
+                      clickable
+                      // onDelete={(e) => {
+                      //   handleDelete(e, value, 'projectManagers')
+                      // }}
+                      deleteIcon={
+                        <CancelIcon
+                          onMouseDown={(event) => {
+                            event.stopPropagation()
+                          }}
+                        />
+                      }
+                      // onClick={(_e) => {
+                      //   handleDelete()
+                      // }}
+                      sx={{ border: 'none' }}
+                      label={
+                        <div>
+                          <Typography sx={{ mb: -1 }}>{value.name}</Typography>
+                          <Typography variant="caption">
+                            {value.email}
+                          </Typography>
+                        </div>
+                      }
+                    />
+                  ))}
                 </Box>
               )}
             >
@@ -795,9 +791,10 @@ const ProjectOverAllSummary = (): JSX.Element => {
                   m: '5px',
                   pl: '10px',
                   border: '1px solid grey',
-                  backgroundColor: projectOverAllSummary.projectSow === 'yes'
-                    ? '#e6f2ff'
-                    : 'white'
+                  backgroundColor:
+                    projectOverAllSummary.projectSow === 'yes'
+                      ? '#e6f2ff'
+                      : 'white'
                 }}
               >
                 <FormControlLabel
@@ -812,9 +809,10 @@ const ProjectOverAllSummary = (): JSX.Element => {
                   m: '5px',
                   pl: '10px',
                   border: '1px solid grey',
-                  backgroundColor: projectOverAllSummary.projectSow === 'no'
-                    ? '#e6f2ff'
-                    : 'white'
+                  backgroundColor:
+                    projectOverAllSummary.projectSow === 'no'
+                      ? '#e6f2ff'
+                      : 'white'
                 }}
               >
                 <FormControlLabel

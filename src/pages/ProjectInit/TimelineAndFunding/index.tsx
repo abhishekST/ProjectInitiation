@@ -15,10 +15,19 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { useDispatch, useSelector } from 'react-redux'
 import { type RootState } from '../../../store'
-import { changeBillingFrequency, changeEndDate, changeNoOfDays, changeProjectBilling, changeStartDate, changeTotalApprovedHours } from './reducer'
+import {
+  changeBillingFrequency,
+  changeEndDate,
+  changeNoOfDays,
+  changeProjectBilling,
+  changeStartDate,
+  changeTotalApprovedHours
+} from './reducer'
 
 const TimelineAndFunding = (): JSX.Element => {
-  const timelineAndFunding = useSelector((state: RootState) => state.timelineAndFunding)
+  const timelineAndFunding = useSelector(
+    (state: RootState) => state.timelineAndFunding
+  )
   const dispatch = useDispatch()
 
   return (
@@ -131,7 +140,10 @@ const TimelineAndFunding = (): JSX.Element => {
                   m: '5px',
                   pl: '10px',
                   border: '1px solid grey',
-                  backgroundColor: timelineAndFunding.projectBilling === 'redmine' ? '#e6f2ff' : 'white'
+                  backgroundColor:
+                    timelineAndFunding.projectBilling === 'redmine'
+                      ? '#e6f2ff'
+                      : 'white'
                 }}
               >
                 <FormControlLabel
@@ -146,7 +158,10 @@ const TimelineAndFunding = (): JSX.Element => {
                   m: '5px',
                   pl: '10px',
                   border: '1px solid grey',
-                  backgroundColor: timelineAndFunding.projectBilling === 'zira' ? '#e6f2ff' : 'white'
+                  backgroundColor:
+                    timelineAndFunding.projectBilling === 'zira'
+                      ? '#e6f2ff'
+                      : 'white'
                 }}
               >
                 <FormControlLabel
@@ -161,7 +176,10 @@ const TimelineAndFunding = (): JSX.Element => {
                   m: '5px',
                   pl: '10px',
                   border: '1px solid grey',
-                  backgroundColor: timelineAndFunding.projectBilling === 'tracker' ? '#e6f2ff' : 'white'
+                  backgroundColor:
+                    timelineAndFunding.projectBilling === 'tracker'
+                      ? '#e6f2ff'
+                      : 'white'
                 }}
               >
                 <FormControlLabel
@@ -194,7 +212,10 @@ const TimelineAndFunding = (): JSX.Element => {
                   m: '5px',
                   pl: '10px',
                   border: '1px solid grey',
-                  backgroundColor: timelineAndFunding.billingFrequency === 'monthly' ? '#e6f2ff' : 'white'
+                  backgroundColor:
+                    timelineAndFunding.billingFrequency === 'monthly'
+                      ? '#e6f2ff'
+                      : 'white'
                 }}
               >
                 <FormControlLabel
@@ -209,7 +230,10 @@ const TimelineAndFunding = (): JSX.Element => {
                   m: '5px',
                   pl: '10px',
                   border: '1px solid grey',
-                  backgroundColor: timelineAndFunding.billingFrequency === 'hourly' ? '#e6f2ff' : 'white'
+                  backgroundColor:
+                    timelineAndFunding.billingFrequency === 'hourly'
+                      ? '#e6f2ff'
+                      : 'white'
                 }}
               >
                 <FormControlLabel
@@ -224,12 +248,17 @@ const TimelineAndFunding = (): JSX.Element => {
                   m: '5px',
                   pl: '10px',
                   border: '1px solid grey',
-                  backgroundColor: timelineAndFunding.billingFrequency === 'fortnightly' ? '#e6f2ff' : 'white'
+                  backgroundColor:
+                    timelineAndFunding.billingFrequency === 'fortnightly'
+                      ? '#e6f2ff'
+                      : 'white'
                 }}
               >
                 <FormControlLabel
                   value="fortnightly"
-                  checked={timelineAndFunding.billingFrequency === 'fortnightly'}
+                  checked={
+                    timelineAndFunding.billingFrequency === 'fortnightly'
+                  }
                   control={<Radio />}
                   label="Fortnightly"
                 />
