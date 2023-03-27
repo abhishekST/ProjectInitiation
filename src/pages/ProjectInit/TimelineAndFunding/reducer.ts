@@ -3,21 +3,19 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 import { revertAll } from '../../../store'
 
 export interface TimelineAndFunding {
-  startDate: Date | null
-  endDate: Date | null
-  noOfDays: number
-  totalApprovedHours: number
-  projectBilling: string
-  billingFrequency: string
+  estimated_timeline_from: string | null
+  estimated_timeline_to: string | null
+  approved_hours: string | null
+  billing_medium: number | null
+  billing_interval: number | null
 }
 
 const initialState: TimelineAndFunding = {
-  startDate: null,
-  endDate: null,
-  noOfDays: 0,
-  totalApprovedHours: 0,
-  projectBilling: '',
-  billingFrequency: ''
+  estimated_timeline_from: null,
+  estimated_timeline_to: null,
+  approved_hours: '0',
+  billing_medium: null,
+  billing_interval: null
 }
 
 export const timelineAndFundingSlice = createSlice({
@@ -27,57 +25,36 @@ export const timelineAndFundingSlice = createSlice({
   reducers: {
     changeStartDate: (
       state,
-      action: PayloadAction<{ startDate: Date | null }>
+      action: PayloadAction<{ startDate: string | null }>
     ) => {
-      state.startDate = action.payload.startDate
+      state.estimated_timeline_from = action.payload.startDate
     },
     changeEndDate: (
       state,
-      action: PayloadAction<{ endDate: Date | null }>
+      action: PayloadAction<{ endDate: string | null }>
     ) => {
-      state.endDate = action.payload.endDate
-    },
-    changeNoOfDays: (
-      state,
-      action: PayloadAction<{ noOfDays: number }>
-    ) => {
-      state.noOfDays = action.payload.noOfDays
-    },
-    changeTotalApprovedHours: (
-      state,
-      action: PayloadAction<{ totalApprovedHours: number }>
-    ) => {
-      state.totalApprovedHours = action.payload.totalApprovedHours
-    },
-    changeClientCompany: (
-      state,
-      action: PayloadAction<{ totalApprovedHours: number }>
-    ) => {
-      state.totalApprovedHours = action.payload.totalApprovedHours
+      state.estimated_timeline_to = action.payload.endDate
     },
     changeProjectBilling: (
       state,
-      action: PayloadAction<{ projectBilling: string }>
+      action: PayloadAction<{ projectBilling: number }>
     ) => {
-      state.projectBilling = action.payload.projectBilling
+      state.billing_medium = action.payload.projectBilling
     },
     changeBillingFrequency: (
       state,
-      action: PayloadAction<{ billingFrequency: string }>
+      action: PayloadAction<{ billingFrequency: number }>
     ) => {
-      state.billingFrequency = action.payload.billingFrequency
+      state.billing_interval = action.payload.billingFrequency
     }
   }
 })
 
 export const {
   changeBillingFrequency,
-  changeClientCompany,
   changeEndDate,
-  changeNoOfDays,
   changeProjectBilling,
-  changeStartDate,
-  changeTotalApprovedHours
+  changeStartDate
 } = timelineAndFundingSlice.actions
 
 export default timelineAndFundingSlice.reducer

@@ -27,19 +27,15 @@ import {
 import { useTheme, type Theme } from '@mui/material/styles'
 import Textarea from '@mui/joy/Textarea'
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
-// import IconButton from '@mui/material/IconButton'
 import { deepOrange } from '@mui/material/colors'
-// import CloseIcon from '@mui/icons-material/Close'
-// import { IconFlagTR, IconFlagIN, IconFlagUS } from 'material-ui-flags'
 import axios from 'axios'
 import CancelIcon from '@mui/icons-material/Cancel'
-
 import { projectInitiaonMock } from '../mock'
 import { useDispatch, useSelector } from 'react-redux'
 import { type RootState } from '../../../store'
 import AddClientDialog from '../../../components/AddClientDialog'
-// import { multiStepContext } from '../StepContext'
-// import AddClientDialog from './AddClientDialog'
+import { configuration } from '../../../configs/configuration'
+// import { countryData } from '../../../constant/countryData'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -54,14 +50,10 @@ const MenuProps = {
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function getStyles (_name: string, _personName: any, theme: Theme) {
-  // console.log('name : ', name)
   return {
     fontWeight: theme.typography.fontWeightMedium
   }
 }
-// personName.indexOf(name) === -1
-// ? theme.typography.fontWeightRegular
-// : theme.typography.fontWeightMedium,
 
 const ClientInformation = (_props: any): JSX.Element => {
   const clientInfo = useSelector((state: RootState) => state.clientInfo)
@@ -69,23 +61,8 @@ const ClientInformation = (_props: any): JSX.Element => {
   const { phaseData } = projectInitiaonMock
   const theme = useTheme()
 
-  // const { userData, setUserData } = useContext(multiStepContext)
   const [openDialog, setOpenDialog] = React.useState(false)
   const [getClientListData, setGetClientListData] = useState([] as client[])
-  // const [hasError, setHasError] = useState(false)
-
-  const names = [
-    'Oliver Hansen',
-    'Van Henry',
-    'April Tucker',
-    'Ralph Hubbard',
-    'Omar Alexander',
-    'Carlos Abbott',
-    'Miriam Wagner',
-    'Bradley Wilkerson',
-    'Virginia Andrews',
-    'Kelly Snyder'
-  ]
 
   const handleClientChange = (event: SelectChangeEvent<client[]>): void => {
     const selectedValues = event.target.value
@@ -99,15 +76,6 @@ const ClientInformation = (_props: any): JSX.Element => {
     )
   }
 
-  // const handleDelete = (e, val) => {
-  //   console.log('valvalval : ', e, val)
-  //   const filteredArray = userData.client.filter((e) => e !== val)
-  //   setUserData({
-  //     ...userData,
-  //     client: filteredArray
-  //   })
-  // }
-
   const handleClickOpen = (): void => {
     setOpenDialog(true)
   }
@@ -116,28 +84,22 @@ const ClientInformation = (_props: any): JSX.Element => {
     setOpenDialog(false)
   }
 
-  const baseURL = 'https://test.resource-api.writso.com/v1/client'
-  const tokenStr =
-    'eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk3OWVkMTU1OTdhYjM1Zjc4MjljZTc0NDMwN2I3OTNiN2ViZWIyZjAiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiQWJoaXNoZWsgU2luZ2giLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUdObXl4WjROM0g5NE9UaFdlXy1LdUFXS0lBQkRzX2xGckh4TjJxLXVIUWE9czk2LWMiLCJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vcmVzb3VyY2UtYXZhaWFiaWxpdHkiLCJhdWQiOiJyZXNvdXJjZS1hdmFpYWJpbGl0eSIsImF1dGhfdGltZSI6MTY3OTc3MTQxNywidXNlcl9pZCI6IjdFbTN3UVdEU0lWam9xZWlzUUF0Mm9DU01SQzMiLCJzdWIiOiI3RW0zd1FXRFNJVmpvcWVpc1FBdDJvQ1NNUkMzIiwiaWF0IjoxNjc5NzcxNDE3LCJleHAiOjE2Nzk3NzUwMTcsImVtYWlsIjoiYWJoaXNoZWsuc2luZ2hAc3VjY2Vzc2l2ZS50ZWNoIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZ29vZ2xlLmNvbSI6WyIxMDgwODY5MzI0MjY0MzUyNTk2MTMiXSwiZW1haWwiOlsiYWJoaXNoZWsuc2luZ2hAc3VjY2Vzc2l2ZS50ZWNoIl19LCJzaWduX2luX3Byb3ZpZGVyIjoiZ29vZ2xlLmNvbSJ9fQ.XKJzDReXJ5KJv-MO3FDXGqk1BbfkI8rUk7mZpl2kIV-iKg8VQbiX95Uwy7JwG4JGk3rWtH15Ncji0BMgWf2ffoyx3n7CzByPGD4fYiV2gkVc44riWJ1RmwkNSRycUbL2wboo4edfKBDjSGYDoCIXv_U7ZqW_ZU7StfORjPnOyXQ7TpTsRvV86cq9_nD8iRbFOmMEPRxJ7lGRy4w6EOmILhNcPOoi_eV6pnKoZ2X7jBbiQMChmj2cb2nbaNw-_h1RLLJ68bPQhB4UsEgst1RI_nUyFfDNn85AA1-gbce-K2ewOqa7UQ_fvZsGnxn1-iBVTePF_gdX0ORHhWtjakhr1Q.eyJuYW1lIjoiQWJoaXNoZWsgU2luZ2giLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUdObXl4WjROM0g5NE9UaFdlXy1LdUFXS0lBQkRzX2xGckh4TjJxLXVIUWE9czk2LWMiLCJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vcmVzb3VyY2UtYXZhaWFiaWxpdHkiLCJhdWQiOiJyZXNvdXJjZS1hdmFpYWJpbGl0eSIsImF1dGhfdGltZSI6MTY3OTc3MTQxNywidXNlcl9pZCI6IjdFbTN3UVdEU0lWam9xZWlzUUF0Mm9DU01SQzMiLCJzdWIiOiI3RW0zd1FXRFNJVmpvcWVpc1FBdDJvQ1NNUkMzIiwiaWF0IjoxNjc5NzcxNDE3LCJleHAiOjE2Nzk3NzUwMTcsImVtYWlsIjoiYWJoaXNoZWsuc2luZ2hAc3VjY2Vzc2l2ZS50ZWNoIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZ29vZ2xlLmNvbSI6WyIxMDgwODY5MzI0MjY0MzUyNTk2MTMiXSwiZW1haWwiOlsiYWJoaXNoZWsuc2luZ2hAc3VjY2Vzc2l2ZS50ZWNoIl19LCJzaWduX2luX3Byb3ZpZGVyIjoiZ29vZ2xlLmNvbSJ9fQ.XKJzDReXJ5KJv-MO3FDXGqk1BbfkI8rUk7mZpl2kIV-iKg8VQbiX95Uwy7JwG4JGk3rWtH15Ncji0BMgWf2ffoyx3n7CzByPGD4fYiV2gkVc44riWJ1RmwkNSRycUbL2wboo4edfKBDjSGYDoCIXv_U7ZqW_ZU7StfORjPnOyXQ7TpTsRvV86cq9_nD8iRbFOmMEPRxJ7lGRy4w6EOmILhNcPOoi_eV6pnKoZ2X7jBbiQMChmj2cb2nbaNw-_h1RLLJ68bPQhB4UsEgst1RI_nUyFfDNn85AA1-gbce-K2ewOqa7UQ_fvZsGnxn1-iBVTePF_gdX0ORHhWtjakhr1Q.eyJuYW1lIjoiU2F0aXNoIEt1bWFyIFBhdGVsIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FHTm15eGJSMkJEZEV6RGtwVTZNbzhralFGUGNnd1VxZUFSTkJYSVd0VW5sPXM5Ni1jIiwiaXNzIjoiaHR0cHM6Ly9zZWN1cmV0b2tlbi5nb29nbGUuY29tL3Jlc291cmNlLWF2YWlhYmlsaXR5IiwiYXVkIjoicmVzb3VyY2UtYXZhaWFiaWxpdHkiLCJhdXRoX3RpbWUiOjE2Nzk2MzM5ODUsInVzZXJfaWQiOiJod1RabzlCdE5PYUFZc2hZM1BORGFWMFZpd28yIiwic3ViIjoiaHdUWm85QnROT2FBWXNoWTNQTkRhVjBWaXdvMiIsImlhdCI6MTY3OTYzMzk4NSwiZXhwIjoxNjc5NjM3NTg1LCJlbWFpbCI6InNhdGlzaC5wYXRlbEBzdWNjZXNzaXZlLnRlY2giLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJnb29nbGUuY29tIjpbIjExNDA2NDQ1NjA3NjcyNTgyNTk5NCJdLCJlbWFpbCI6WyJzYXRpc2gucGF0ZWxAc3VjY2Vzc2l2ZS50ZWNoIl19LCJzaWduX2luX3Byb3ZpZGVyIjoiZ29vZ2xlLmNvbSJ9fQ.eIowTcmxwo9zqZX5N9H0eMijmsdtvyhCWczLCWH3_zgkBu-mATAU5AFs5p5WSt5oXE8QKiZlMybiJd81DY9qNDU7DJEGIBkW9JqmixUnIsWEPboS1bUcmjdaKESF2xS5CwE6iz7XvnMac-lxw3J4fY3VxlQSRU8CZY5OpsTCbhiEqAiQmnELKWW9KrH0V9Or75PXNJBnG4b5AIMbSTaC9iL0l0CWFVzpE_6MpPAdyAMCYaW-NADaK_6YKtPBHubF01YG781PSDxb9bRXS9ze0Pz3Sa5o59tSWfyP4Tnr2KmgLl-9tdQKZdhyy6lJhKV6-MlKjTAdVpzM_u6z9mKzuA'
-
   useEffect(() => {
-    axios
-      .get(baseURL, { headers: { Authorization: tokenStr } })
-      .then((response) => {
-        setGetClientListData([
-          { id: 1, name: 'Olivia', emails: 'singh4758@gail.com' },
-          { id: 2, name: 'snsjsjs', emails: 'aaaaaa' },
-          { id: 3, name: 'Ol', emails: 'sdsggs' }
-        ])
-        // setUserData({ ['client']: response?.data?.data})
-      })
-      .catch(() => {
-        setGetClientListData([
-          { id: 1, name: 'Olivia', emails: 'singh4758@gail.com' },
-          { id: 2, name: 'snsjsjs', emails: 'aaaaaa' },
-          { id: 3, name: 'Ol', emails: 'sdsggs' }
-        ])
-      })
+    const timeoutIdForClient = setTimeout(() => {
+      axios
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        .get(`${configuration.uri}/v1/client`, { headers: { authorization: configuration.token } })
+        .then((response) => {
+          setGetClientListData(response?.data?.data ?? [])
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    }, 100)
+
+    return () => {
+      clearTimeout(timeoutIdForClient)
+    }
   }, [])
 
   return (

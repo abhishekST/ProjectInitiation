@@ -2,50 +2,40 @@ import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { revertAll } from '../../../store'
 
-export interface AccountManager {
-  id: number
-  name: string
-  email: string
-}
-
-export interface ProjectManager {
-  id: number
-  name: string
-  email: string
-}
-
 export interface ProjectOverallSummary {
-  projectName: string
-  projectPhase: string
-  projectType: string
-  projectGovernanceModel: string
-  projectLifeCycle: string
-  projectDomain: string[]
-  projectParameter: string[]
-  subProject: string[]
-  primaryTechStack: string[]
-  secondryTechStack: string[]
-  accountManagers: AccountManager[]
-  projectManagers: ProjectManager[]
-  projectSummary: string
-  projectSow: string
+  project_name: string
+  project_type_id: number | null
+  billing_type: number | null
+  gov_category_id: number | null
+  lifecycle_model_id: number | null
+  project_domain: number[]
+  project_component: string
+  subProject: boolean
+  parent_id: number[]
+  primary_technology: number[]
+  secondry_technology: number[]
+  account_manager: number[]
+  project_manager: number[]
+  project_summary: string
+  project_sow: number
 }
 
 const initialState: ProjectOverallSummary = {
-  projectName: '',
-  projectPhase: '',
-  projectType: '',
-  projectGovernanceModel: '',
-  projectLifeCycle: '',
-  projectDomain: [],
-  projectParameter: [],
-  subProject: [],
-  primaryTechStack: [],
-  secondryTechStack: [],
-  accountManagers: [],
-  projectManagers: [],
-  projectSummary: '',
-  projectSow: ''
+  project_name: '',
+  project_type_id: null,
+  billing_type: null,
+  gov_category_id: null,
+  lifecycle_model_id: null,
+  project_domain: [],
+  project_component: '[]',
+  subProject: false,
+  parent_id: [],
+  primary_technology: [],
+  secondry_technology: [],
+  account_manager: [],
+  project_manager: [],
+  project_summary: '',
+  project_sow: 0
 }
 
 export const projectOverAllSummarySlice = createSlice({
@@ -57,85 +47,91 @@ export const projectOverAllSummarySlice = createSlice({
       state,
       action: PayloadAction<{ projectName: string }>
     ) => {
-      state.projectName = action.payload.projectName
+      state.project_name = action.payload.projectName
     },
     changeProductPhase: (
       state,
-      action: PayloadAction<{ projectPhase: string }>
+      action: PayloadAction<{ projectPhase: number }>
     ) => {
-      state.projectPhase = action.payload.projectPhase
+      state.project_type_id = action.payload.projectPhase
     },
     changeProjectType: (
       state,
-      action: PayloadAction<{ projectType: string }>
+      action: PayloadAction<{ projectType: number }>
     ) => {
-      state.projectType = action.payload.projectType
+      state.billing_type = action.payload.projectType
     },
     changeProjectGovernanceModel: (
       state,
-      action: PayloadAction<{ projectGovernanceModel: string }>
+      action: PayloadAction<{ projectGovernanceModel: number }>
     ) => {
-      state.projectGovernanceModel = action.payload.projectGovernanceModel
+      state.gov_category_id = action.payload.projectGovernanceModel
     },
     changeProjectLifeCycle: (
       state,
-      action: PayloadAction<{ projectLifeCycle: string }>
+      action: PayloadAction<{ projectLifeCycle: number }>
     ) => {
-      state.projectLifeCycle = action.payload.projectLifeCycle
+      state.lifecycle_model_id = action.payload.projectLifeCycle
     },
     changeProjectDomain: (
       state,
-      action: PayloadAction<{ projectDomain: string[] }>
+      action: PayloadAction<{ projectDomain: number[] }>
     ) => {
-      state.projectDomain = action.payload.projectDomain
+      state.project_domain = action.payload.projectDomain
     },
     changeProjectParameter: (
       state,
-      action: PayloadAction<{ projectParameter: string[] }>
+      action: PayloadAction<{ projectParameter: string }>
     ) => {
-      state.projectParameter = action.payload.projectParameter
+      state.project_component = action.payload.projectParameter
     },
     changeSubProject: (
       state,
-      action: PayloadAction<{ subProject: string[] }>
+      action: PayloadAction<{ subProject: boolean }>
     ) => {
       state.subProject = action.payload.subProject
     },
+    changeParentId: (
+      state,
+      action: PayloadAction<{ parentId: number[] }>
+    ) => {
+      state.parent_id = action.payload.parentId
+    },
     changePrimaryTechStack: (
       state,
-      action: PayloadAction<{ primaryTechStack: string[] }>
+      action: PayloadAction<{ primaryTechStack: number[] }>
     ) => {
-      state.primaryTechStack = action.payload.primaryTechStack
+      state.primary_technology = action.payload.primaryTechStack
     },
     changeSecondryTechStack: (
       state,
-      action: PayloadAction<{ secondryTechStack: string[] }>
+      action: PayloadAction<{ secondryTechStack: number[] }>
     ) => {
-      state.secondryTechStack = action.payload.secondryTechStack
+      state.secondry_technology = action.payload.secondryTechStack
     },
     changeAccountManagers: (
       state,
-      action: PayloadAction<{ accountManagers: AccountManager[] }>
+      action: PayloadAction<{ accountManagers: number[] }>
     ) => {
-      state.accountManagers = action.payload.accountManagers
+      state.account_manager = action.payload.accountManagers
     },
     changeProjectManagers: (
       state,
-      action: PayloadAction<{ projectManagers: ProjectManager[] }>
+      action: PayloadAction<{ projectManagers: number[] }>
     ) => {
-      state.projectManagers = action.payload.projectManagers
+      state.project_manager = action.payload.projectManagers
     },
     changeProjectSummary: (
       state,
       action: PayloadAction<{ projectSummary: string }>
     ) => {
-      state.projectSummary = action.payload.projectSummary
+      state.project_summary = action.payload.projectSummary
     },
     changeProjectSow: (
       state,
-      action: PayloadAction<{ projectSow: string }>
+      action: PayloadAction<{ projectSow: number }>
     ) => {
-      state.projectSow = action.payload.projectSow
+      state.project_sow = action.payload.projectSow
     }
   }
 })
@@ -152,6 +148,7 @@ export const {
   changeProjectParameter,
   changeSecondryTechStack,
   changeSubProject,
+  changeParentId,
   changeAccountManagers,
   changeProjectSummary,
   changeProjectSow
