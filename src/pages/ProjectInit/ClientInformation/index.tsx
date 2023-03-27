@@ -5,7 +5,8 @@ import {
   changeClientCountry,
   changeClientCompany,
   changeClientState,
-  type client
+  type client,
+  validateField
 } from './reducer'
 import {
   Box,
@@ -159,6 +160,7 @@ const ClientInformation = (_props: any): JSX.Element => {
               multiple
               value={clientInfo.client}
               onChange={handleClientChange}
+              onBlur={() => dispatch(validateField({ field: 'client' }))}
               input={<OutlinedInput label="Client" />}
               MenuProps={MenuProps}
               renderValue={(selected) => (
@@ -237,6 +239,7 @@ const ClientInformation = (_props: any): JSX.Element => {
             onChange={(event) => {
               dispatch(changeClientCompany({ company: event.target.value }))
             }}
+            onBlur={() => dispatch(validateField({ field: 'company' }))}
             margin="normal"
             fullWidth
             helperText="ddd"
@@ -276,6 +279,7 @@ const ClientInformation = (_props: any): JSX.Element => {
                   })
                 )
               }}
+              onBlur={() => dispatch(validateField({ field: 'country' }))}
               input={<OutlinedInput label="Country" />}
               MenuProps={MenuProps}
               renderValue={(selected) => (
@@ -333,6 +337,7 @@ const ClientInformation = (_props: any): JSX.Element => {
               onChange={(event) => {
                 dispatch(changeClientState({ state: event.target.value }))
               }}
+              onBlur={() => dispatch(validateField({ field: 'state' }))}
               input={<OutlinedInput label="State" />}
               MenuProps={MenuProps}
             >
@@ -357,6 +362,7 @@ const ClientInformation = (_props: any): JSX.Element => {
               onChange={({ target: { value } }) => {
                 dispatch(changeClientAddress({ address: value }))
               }}
+              onBlur={() => dispatch(validateField({ field: 'address' }))}
             />
           </FormControl>
         </Box>

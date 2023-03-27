@@ -1,11 +1,20 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { revertAll } from '../../../store'
+import { clientInfoValidationSchema } from './validationSchema'
 
 export interface client {
   id: number
   name: string
   emails: string
+}
+
+interface clientError {
+  address: undefined | string
+  client: undefined | string
+  country: undefined | string
+  state: undefined | string
+  company: undefined | string
 }
 
 export interface ClientInformationState {
@@ -14,6 +23,7 @@ export interface ClientInformationState {
   country: string
   company: string
   state: string
+  errors: clientError
 }
 
 const initialState: ClientInformationState = {
@@ -21,7 +31,14 @@ const initialState: ClientInformationState = {
   client: [],
   country: '',
   company: '',
-  state: ''
+  state: '',
+  errors: {
+    address: undefined,
+    client: undefined,
+    country: undefined,
+    state: undefined,
+    company: undefined
+  }
 }
 
 export const clientInformationSlice = createSlice({
@@ -29,10 +46,7 @@ export const clientInformationSlice = createSlice({
   initialState,
   extraReducers: (builder) => builder.addCase(revertAll, () => initialState),
   reducers: {
-    changeClient: (
-      state,
-      action: PayloadAction<{ clients: client[] }>
-    ) => {
+    changeClient: (state, action: PayloadAction<{ clients: client[] }>) => {
       state.client = action.payload.clients
     },
     changeClientAddress: (
@@ -53,11 +67,19 @@ export const clientInformationSlice = createSlice({
     ) => {
       state.company = action.payload.company
     },
-    changeClientState: (
-      state,
-      action: PayloadAction<{ state: string }>
-    ) => {
+    changeClientState: (state, action: PayloadAction<{ state: string }>) => {
       state.state = action.payload.state
+    },
+    validateField: (state, action: PayloadAction<{ field: string }>) => {
+      const { field } = action.payload
+      try {
+        clientInfoValidationSchema().validateSyncAt(field, state)
+        const newError = { ...state.errors, [field]: undefined }
+        state.errors = newError
+      } catch (error: any) {
+        const newError = { ...state.errors, [field]: error.message }
+        state.errors = newError
+      }
     }
   }
 })
@@ -67,7 +89,8 @@ export const {
   changeClientAddress,
   changeClientCountry,
   changeClientState,
-  changeClientCompany
+  changeClientCompany,
+  validateField
 } = clientInformationSlice.actions
 
 export default clientInformationSlice.reducer
