@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import {
   Box,
@@ -7,27 +7,28 @@ import {
   Select,
   OutlinedInput,
   MenuItem,
-  Typography,
+  // Typography,
   FormControl,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
+  // FormLabel,
+  // RadioGroup,
+  // FormControlLabel,
+  // Radio,
   Chip,
-  Avatar
+  Checkbox,
+  FormControlLabel
+  // Avatar
 } from '@mui/material'
 import { type Theme, useTheme } from '@mui/material/styles'
-import Textarea from '@mui/joy/Textarea'
+// import Textarea from '@mui/joy/Textarea'
 import CancelIcon from '@mui/icons-material/Cancel'
-// import _without from 'lodash/without'
 import IconButton from '@mui/material/IconButton'
 import ClearIcon from '@mui/icons-material/Clear'
-import { deepOrange } from '@mui/material/colors'
+// import { deepOrange } from '@mui/material/colors'
 import { projectInitiaonMock } from '../mock'
 import { useDispatch, useSelector } from 'react-redux'
 import { type RootState } from '../../../store'
 import {
-  changeAccountManagers,
+  // changeAccountManagers,
   changePrimaryTechStack,
   changeProductPhase,
   changeProjectDomain,
@@ -37,11 +38,20 @@ import {
   changeProjectParameter,
   changeProjectType,
   changeSecondryTechStack,
-  changeSubProject,
-  changeProjectManagers,
-  changeProjectSummary,
-  changeProjectSow
+  // changeSubProject,
+  // changeProjectManagers,
+  // changeProjectSummary,
+  // changeProjectSow,
+  changeParentId,
+  changeSubProject
 } from './reducer'
+import { fetch } from '../../../utils/helper'
+import { configuration } from '../../../configs/configuration'
+import {
+  type ProjectDomain,
+  type Project,
+  type ProjectParameter
+} from '../../../interface/ProjectOverAllSummary'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -80,6 +90,13 @@ function getStyles (_name: string, _personName: any, theme: Theme) {
 
 const ProjectOverAllSummary = (): JSX.Element => {
   const { phaseData } = projectInitiaonMock
+  const [projectList, setProjectList] = useState([] as Project[])
+  const [projectDomainList, setProjectDomainList] = useState(
+    [] as ProjectDomain[]
+  )
+  const [projectParameterList, setProjectParameterList] = useState(
+    [] as ProjectParameter[]
+  )
   const projectOverAllSummary = useSelector(
     (state: RootState) => state.projectOverAllSummary
   )
@@ -88,11 +105,30 @@ const ProjectOverAllSummary = (): JSX.Element => {
 
   useEffect(() => {
     const timeoutIdForClient = setTimeout(() => {
-      try{
-        const [] = Promise.all([])
-      } catch(error) {
-
-      }
+      Promise.all([
+        fetch(configuration.resourceUrl, 'project-listings'),
+        fetch(configuration.resourceUrl, 'project-domain'),
+        fetch(configuration.resourceUrl, 'project-parameter')
+      ])
+        .then(
+          ([
+            projectListResponse,
+            projectDomainResponse,
+            projectParameterResponse
+          ]) => {
+            const projectList = projectListResponse.data.data as Project[]
+            setProjectList(projectList)
+            const projectDomainList = projectDomainResponse.data
+              .data as ProjectDomain[]
+            setProjectDomainList(projectDomainList)
+            const projectParameterList = projectParameterResponse.data
+              .data as ProjectParameter[]
+            setProjectParameterList(projectParameterList)
+          }
+        )
+        .catch((error) => {
+          console.error(error)
+        })
     }, 100)
 
     return () => {
@@ -111,241 +147,249 @@ const ProjectOverAllSummary = (): JSX.Element => {
           noValidate
           autoComplete="off"
         >
-          <TextField
-            required
-            id="full-width-text-field"
-            label="Project Name"
-            placeholder="Enter Name"
-            name="projectName"
-            value={projectOverAllSummary.project_name}
-            onChange={({ target: { value } }) => {
-              dispatch(changeProjectName({ projectName: value }))
-            }}
-            margin="normal"
-            fullWidth
-          />
-          <FormControl sx={{ m: 1, width: '48%' }} required>
-            <InputLabel id="demo-multiple-name-label">Phase </InputLabel>
-            <Select
-              labelId="demo-multiple-name-label"
-              id="demo-multiple-name"
-              // multiple
-              value={projectOverAllSummary.project_type_id}
-              name="phase"
-              displayEmpty
-              onChange={({ target: { value } }) => {
-                if (value === null || typeof value === 'string') {
-                  return
-                }
-                dispatch(changeProductPhase({ project_type_id: value }))
-              }}
-              input={<OutlinedInput label="Phase" />}
-              MenuProps={MenuProps}
-              // endAdornment={
-              //   <IconButton
-              //     sx={{
-              //       visibility: (projectOverAllSummary.projectPhase.length > 0) ? 'visible' : 'hidden'
-              //     }}
-              //     onClick={(_e) => {
-              //       handleClearClick('phase')
-              //     }}
-              //   >
-              //     <ClearIcon />
-              //   </IconButton>
-              // }
-            >
-              {phaseData.map((itm) => (
-                <MenuItem
-                  key={itm.name}
-                  value={itm.name}
-                  style={getStyles(itm.name, 'userData', theme)}
-                >
-                  {itm.name}
-                </MenuItem>
-              ))}
-              {/* <Button
-                                color='success'
-                                variant='contained'
-                            >
-                                Close
-                            </Button> */}
-            </Select>
-          </FormControl>
-          <FormControl sx={{ m: 1, width: '48%' }} required>
-            <InputLabel id="demo-multiple-name-label">Project Type</InputLabel>
-            <Select
-              labelId="demo-multiple-name-label"
-              id="demo-multiple-name"
-              // multiple
+          <Box>
+            <TextField
               required
-              value={projectOverAllSummary.billing_type}
-              name="projectType"
-              onChange={({ target: { value } }) => {
-                if (typeof value === 'string' || value === null) {
-                  return
-                }
-                dispatch(changeProjectType({ billing_type: value }))
-              }}
-              input={<OutlinedInput label="Project Type *" />}
-              MenuProps={MenuProps}
-              endAdornment={
-                <IconButton
-                  sx={{
-                    visibility:
-                      ((projectOverAllSummary?.billing_type) != null)
-                        ? 'visible'
-                        : 'hidden'
-                  }}
-                  // onClick={(_e) => {
-                  //   handleClearClick('projectType')
-                  // }}
-                >
-                  <ClearIcon />
-                </IconButton>
-              }
-            >
-              {names.map((name) => (
-                <MenuItem
-                  key={name}
-                  value={name}
-                  style={getStyles(name, 'userData', theme)}
-                >
-                  {name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl sx={{ m: 1, width: '48%' }} required>
-            <InputLabel id="demo-multiple-name-label">
-              Governance Model
-            </InputLabel>
-            <Select
-              labelId="demo-multiple-name-label"
-              id="demo-multiple-name"
-              // multiple
-              value={projectOverAllSummary.gov_category_id}
-              name="governanceModel"
-              onChange={({ target: { value } }) => {
-                if (typeof value === 'string' || value === null) {
-                  return
-                }
-                dispatch(
-                  changeProjectGovernanceModel({
-                    gov_category_id: value
-                  })
+              id="full-width-text-field"
+              label="Project Name"
+              placeholder="Enter Name"
+              error={
+                !(
+                  projectList.find(
+                    ({ project_name: projectName }) =>
+                      projectName === projectOverAllSummary.project_name
+                  ) == null
                 )
-              }}
-              input={<OutlinedInput label="Governance Model" />}
-              MenuProps={MenuProps}
-              endAdornment={
-                <IconButton
-                  sx={{
-                    visibility:
-                      (projectOverAllSummary?.gov_category_id != null)
-                        ? 'visible'
-                        : 'hidden'
-                  }}
-                  // onClick={(_e) => {
-                  //   handleClearClick('governanceModel')
-                  // }}
-                >
-                  <ClearIcon />
-                </IconButton>
               }
-            >
-              {names.map((name) => (
-                <MenuItem
-                  key={name}
-                  value={name}
-                  style={getStyles(name, 'userData', theme)}
-                >
-                  {name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl sx={{ m: 1, width: '48%' }}>
-            <InputLabel id="demo-multiple-name-label">
-              Project Lifecycle Model
-            </InputLabel>
-            <Select
-              labelId="demo-multiple-name-label"
-              id="demo-multiple-name"
-              // multiple
-              value={projectOverAllSummary.lifecycle_model_id}
-              name="projectLifeCycleModel"
+              name="projectName"
+              value={projectOverAllSummary.project_name}
               onChange={({ target: { value } }) => {
-                if (typeof value === 'string' || value === null) {
-                  return
-                }
-                dispatch(changeProjectLifeCycle({ lifecycle_model_id: value }))
+                dispatch(changeProjectName({ project_name: value }))
               }}
-              input={<OutlinedInput label="Project Lifecycle Model" />}
-              MenuProps={MenuProps}
-              endAdornment={
-                <IconButton
-                  sx={{
-                    visibility:
-                      (projectOverAllSummary.lifecycle_model_id != null)
-                        ? 'visible'
-                        : 'hidden'
-                  }}
-                  // onClick={(_e) => {
-                  //   handleClearClick('projectLifeCycleModel')
-                  // }}
-                >
-                  <ClearIcon />
-                </IconButton>
-              }
-            >
-              {names.map((name) => (
-                <MenuItem
-                  key={name}
-                  value={name}
-                  style={getStyles(name, 'userData', theme)}
-                >
-                  {name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl sx={{ m: 1, width: '48%' }} required>
-            <InputLabel id="demo-multiple-name-label">
-              Project Domain
-            </InputLabel>
-            <Select
-              labelId="demo-multiple-name-label"
-              id="demo-multiple-name"
-              multiple
-              value={projectOverAllSummary.project_domain}
-              name="projectDomain"
-              onChange={({ target: { value } }) => {
-                if (typeof value === 'string') {
-                  return
+              margin="normal"
+              fullWidth
+            />
+            <FormControl sx={{ m: 1, width: '48%' }} required>
+              <InputLabel id="demo-multiple-name-label">Phase </InputLabel>
+              <Select
+                labelId="demo-multiple-name-label"
+                id="demo-multiple-name"
+                // multiple
+                value={projectOverAllSummary.project_type_id}
+                name="phase"
+                displayEmpty
+                onChange={({ target: { value } }) => {
+                  if (value === null || typeof value === 'string') {
+                    return
+                  }
+                  dispatch(changeProductPhase({ project_type_id: value }))
+                }}
+                input={<OutlinedInput label="Phase" />}
+                MenuProps={MenuProps}
+                // endAdornment={
+                //   <IconButton
+                //     sx={{
+                //       visibility: (projectOverAllSummary.projectPhase.length > 0) ? 'visible' : 'hidden'
+                //     }}
+                //     onClick={(_e) => {
+                //       handleClearClick('phase')
+                //     }}
+                //   >
+                //     <ClearIcon />
+                //   </IconButton>
+                // }
+              >
+                {phaseData.map((itm) => (
+                  <MenuItem
+                    key={itm.name}
+                    value={itm.name}
+                    style={getStyles(itm.name, 'userData', theme)}
+                  >
+                    {itm.name}
+                  </MenuItem>
+                ))}
+                {/* <Button
+                                  color='success'
+                                  variant='contained'
+                              >
+                                  Close
+                              </Button> */}
+              </Select>
+            </FormControl>
+          </Box>
+          <Box>
+            <FormControl sx={{ m: 1, width: '48%' }} required>
+              <InputLabel id="demo-multiple-name-label">
+                Project Type
+              </InputLabel>
+              <Select
+                labelId="demo-multiple-name-label"
+                id="demo-multiple-name"
+                // multiple
+                required
+                value={projectOverAllSummary.billing_type}
+                name="projectType"
+                onChange={({ target: { value } }) => {
+                  if (typeof value === 'string' || value === null) {
+                    return
+                  }
+                  dispatch(changeProjectType({ billing_type: value }))
+                }}
+                input={<OutlinedInput label="Project Type *" />}
+                MenuProps={MenuProps}
+                endAdornment={
+                  <IconButton
+                    sx={{
+                      visibility:
+                        projectOverAllSummary?.billing_type != null
+                          ? 'visible'
+                          : 'hidden'
+                    }}
+                    // onClick={(_e) => {
+                    //   handleClearClick('projectType')
+                    // }}
+                  >
+                    <ClearIcon />
+                  </IconButton>
                 }
-                dispatch(changeProjectDomain({ project_domain: value }))
-              }}
-              input={<OutlinedInput label="Project Domain" />}
-              MenuProps={MenuProps}
-              renderValue={(selected) => (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selected.map(
-                    (
-                      value:
-                      | boolean
-                      | React.ReactElement<
-                      any,
-                      string | React.JSXElementConstructor<any>
-                      >
-                      | React.ReactFragment
-                      | React.Key
-                      | null
-                      | undefined,
-                      index
-                    ) => (
+              >
+                {names.map((name) => (
+                  <MenuItem
+                    key={name}
+                    value={name}
+                    style={getStyles(name, 'userData', theme)}
+                  >
+                    {name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl sx={{ m: 1, width: '48%' }} required>
+              <InputLabel id="demo-multiple-name-label">
+                Governance Model
+              </InputLabel>
+              <Select
+                labelId="demo-multiple-name-label"
+                id="demo-multiple-name"
+                // multiple
+                value={projectOverAllSummary.gov_category_id}
+                name="governanceModel"
+                onChange={({ target: { value } }) => {
+                  if (typeof value === 'string' || value === null) {
+                    return
+                  }
+                  dispatch(
+                    changeProjectGovernanceModel({
+                      gov_category_id: value
+                    })
+                  )
+                }}
+                input={<OutlinedInput label="Governance Model" />}
+                MenuProps={MenuProps}
+                endAdornment={
+                  <IconButton
+                    sx={{
+                      visibility:
+                        projectOverAllSummary?.gov_category_id != null
+                          ? 'visible'
+                          : 'hidden'
+                    }}
+                    // onClick={(_e) => {
+                    //   handleClearClick('governanceModel')
+                    // }}
+                  >
+                    <ClearIcon />
+                  </IconButton>
+                }
+              >
+                {names.map((name) => (
+                  <MenuItem
+                    key={name}
+                    value={name}
+                    style={getStyles(name, 'userData', theme)}
+                  >
+                    {name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+          <Box>
+            <FormControl sx={{ m: 1, width: '48%' }}>
+              <InputLabel id="demo-multiple-name-label">
+                Project Lifecycle Model
+              </InputLabel>
+              <Select
+                labelId="demo-multiple-name-label"
+                id="demo-multiple-name"
+                // multiple
+                value={projectOverAllSummary.lifecycle_model_id}
+                name="projectLifeCycleModel"
+                onChange={({ target: { value } }) => {
+                  if (typeof value === 'string' || value === null) {
+                    return
+                  }
+                  dispatch(
+                    changeProjectLifeCycle({ lifecycle_model_id: value })
+                  )
+                }}
+                input={<OutlinedInput label="Project Lifecycle Model" />}
+                MenuProps={MenuProps}
+                endAdornment={
+                  <IconButton
+                    sx={{
+                      visibility:
+                        projectOverAllSummary.lifecycle_model_id != null
+                          ? 'visible'
+                          : 'hidden'
+                    }}
+                    // onClick={(_e) => {
+                    //   handleClearClick('projectLifeCycleModel')
+                    // }}
+                  >
+                    <ClearIcon />
+                  </IconButton>
+                }
+              >
+                {names.map((name) => (
+                  <MenuItem
+                    key={name}
+                    value={name}
+                    style={getStyles(name, 'userData', theme)}
+                  >
+                    {name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl sx={{ m: 1, width: '48%' }} required>
+              <InputLabel id="demo-multiple-name-label">
+                Project Domain
+              </InputLabel>
+              <Select
+                labelId="demo-multiple-name-label"
+                id="demo-multiple-name"
+                multiple
+                value={projectOverAllSummary.project_domain}
+                name="projectDomain"
+                onChange={({ target: { value } }) => {
+                  if (typeof value === 'string') {
+                    return
+                  }
+                  dispatch(changeProjectDomain({ project_domain: value }))
+                }}
+                input={<OutlinedInput label="Project Domain" />}
+                MenuProps={MenuProps}
+                renderValue={(selectedProjectDomainList) => (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {selectedProjectDomainList.map((selectProjectDomainId) => (
                       <Chip
-                        key={index}
-                        label={value}
+                        key={selectProjectDomainId}
+                        label={
+                          projectDomainList?.find(
+                            ({ id }) => selectProjectDomainId === id
+                          )?.name
+                        }
                         // onDelete={(e) => {
                         //   handleDelete(e, value, 'projectDomain')
                         // }}
@@ -360,56 +404,48 @@ const ProjectOverAllSummary = (): JSX.Element => {
                         //   handleDelete()
                         // }}
                       />
-                    )
-                  )}
-                </Box>
-              )}
-            >
-              {names.map((name) => (
-                <MenuItem
-                  key={name}
-                  value={name}
-                  style={getStyles(name, 'userData', theme)}
-                >
-                  {name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl sx={{ m: 1, width: '48%' }} required>
-            <InputLabel id="demo-multiple-name-label">Parameters</InputLabel>
-            <Select
-              labelId="demo-multiple-name-label"
-              id="demo-multiple-name"
-              multiple
-              value={JSON.parse(projectOverAllSummary.project_component)}
-              name="parameters"
-              onChange={({ target: { value } }) => {
-                if (typeof value === 'string') {
-                  return
-                }
-                dispatch(changeProjectParameter({ project_component: value }))
-              }}
-              input={<OutlinedInput label="Parameters" />}
-              MenuProps={MenuProps}
-              renderValue={(selected) => (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selected?.map(
-                    (
-                      value:
-                      | boolean
-                      | React.ReactElement<
-                      any,
-                      string | React.JSXElementConstructor<any>
-                      >
-                      | React.ReactFragment
-                      | React.Key
-                      | null
-                      | undefined,
-                      index
-                    ) => (
+                    ))}
+                  </Box>
+                )}
+              >
+                {projectDomainList.map(({ id, name }) => (
+                  <MenuItem
+                    key={id}
+                    value={id}
+                    style={getStyles(name, 'userData', theme)}
+                  >
+                    {name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+          <Box>
+            <FormControl sx={{ m: 1, width: '48%' }} required>
+              <InputLabel id="demo-multiple-name-label">Parameters</InputLabel>
+              <Select
+                labelId="demo-multiple-name-label"
+                id="demo-multiple-name"
+                multiple
+                value={JSON.parse(projectOverAllSummary.project_component)}
+                name="parameters"
+                onChange={({ target: { value } }) => {
+                  if (typeof value === 'string') {
+                    return
+                  }
+                  dispatch(
+                    changeProjectParameter({
+                      project_component: JSON.stringify(value)
+                    })
+                  )
+                }}
+                input={<OutlinedInput label="Parameters" />}
+                MenuProps={MenuProps}
+                renderValue={(selectedProjectPrameter: number[]) => (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {selectedProjectPrameter.map((selectProjectParameterId) => (
                       <Chip
-                        key={index}
+                        key={selectProjectParameterId}
                         // onDelete={(e) => {
                         //   handleDelete(e, value, 'parameters')
                         // }}
@@ -423,89 +459,92 @@ const ProjectOverAllSummary = (): JSX.Element => {
                         // onClick={(_e) => {
                         //   handleDelete()
                         // }}
-                        label={value}
+                        label={
+                          projectParameterList?.find(
+                            ({ id }) => selectProjectParameterId === id
+                          )?.name
+                        }
                       />
-                    )
-                  )}
-                </Box>
-              )}
-            >
-              {names.map((name) => (
-                <MenuItem
-                  key={name}
-                  value={name}
-                  style={getStyles(name, 'userData', theme)}
-                >
-                  {name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl sx={{ m: 1, width: '48%' }} required>
-            <InputLabel id="demo-multiple-name-label">
-              Add Sub - Project
-            </InputLabel>
-            <Select
-              labelId="demo-multiple-name-label"
-              id="demo-multiple-name"
-              multiple
-              disabled
+                    ))}
+                  </Box>
+                )}
+              >
+                {projectParameterList.map(({ id, name }) => (
+                  <MenuItem
+                    key={id}
+                    value={id}
+                    style={getStyles(name, 'userData', theme)}
+                  >
+                    {name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControlLabel
               value={projectOverAllSummary.subProject}
-              name="addSubProject"
-              onChange={({ target: { value } }) => {
-                if (typeof value === 'string') {
-                  return
-                }
-                dispatch(changeSubProject({ subProject: value }))
-              }}
-              input={<OutlinedInput label="Add Sub - Project" />}
-              MenuProps={MenuProps}
-            >
-              {names.map((name) => (
-                <MenuItem
-                  key={name}
-                  value={name}
-                  style={getStyles(name, 'userData', theme)}
-                >
-                  {name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl sx={{ m: 1, width: '48%' }} required>
-            <InputLabel id="demo-multiple-name-label">
-              Primary Tech Stack
-            </InputLabel>
-            <Select
-              labelId="demo-multiple-name-label"
-              id="demo-multiple-name"
-              multiple
-              value={projectOverAllSummary.primary_technology}
-              name="primaryTeckStack"
-              onChange={({ target: { value } }) => {
-                if (typeof value === 'string') {
-                  return
-                }
-                dispatch(changePrimaryTechStack({ primary_technology: value }))
-              }}
-              input={<OutlinedInput label="Primary Tech Stack" />}
-              MenuProps={MenuProps}
-              renderValue={(selected) => (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selected.map(
-                    (
-                      value:
-                      | boolean
-                      | React.ReactElement<
-                      any,
-                      string | React.JSXElementConstructor<any>
-                      >
-                      | React.ReactFragment
-                      | React.Key
-                      | null
-                      | undefined,
-                      index
-                    ) => (
+              control={<Checkbox />}
+              label="Add Sub-Project"
+              labelPlacement="start"
+              onChange={(_, checked) =>
+                dispatch(changeSubProject({ subProject: checked }))
+              }
+            />
+            <FormControl sx={{ m: 1, width: '48%' }} required>
+              <InputLabel id="demo-multiple-name-label">
+                Add Sub - Project
+              </InputLabel>
+              <Select
+                labelId="demo-multiple-name-label"
+                id="demo-multiple-name"
+                multiple
+                disabled={projectOverAllSummary.subProject}
+                value={projectOverAllSummary.parent_id}
+                name="addSubProject"
+                onChange={({ target: { value } }) => {
+                  if (typeof value === 'string') {
+                    return
+                  }
+                  dispatch(changeParentId({ parent_id: value }))
+                }}
+                input={<OutlinedInput label="Add Sub - Project" />}
+                MenuProps={MenuProps}
+              >
+                {names.map((name) => (
+                  <MenuItem
+                    key={name}
+                    value={name}
+                    style={getStyles(name, 'userData', theme)}
+                  >
+                    {name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+          <Box>
+            <FormControl sx={{ m: 1, width: '48%' }} required>
+              <InputLabel id="demo-multiple-name-label">
+                Primary Tech Stack
+              </InputLabel>
+              <Select
+                labelId="demo-multiple-name-label"
+                id="demo-multiple-name"
+                multiple
+                value={projectOverAllSummary.primary_technology}
+                name="primaryTeckStack"
+                onChange={({ target: { value } }) => {
+                  if (typeof value === 'string') {
+                    return
+                  }
+                  dispatch(
+                    changePrimaryTechStack({ primary_technology: value })
+                  )
+                }}
+                input={<OutlinedInput label="Primary Tech Stack" />}
+                MenuProps={MenuProps}
+                renderValue={(selected) => (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {selected.map((value, index) => (
                       <Chip
                         key={index}
                         label={value}
@@ -523,56 +562,44 @@ const ProjectOverAllSummary = (): JSX.Element => {
                         //   handleDelete()
                         // }}
                       />
-                    )
-                  )}
-                </Box>
-              )}
-            >
-              {names.map((name) => (
-                <MenuItem
-                  key={name}
-                  value={name}
-                  style={getStyles(name, 'userData', theme)}
-                >
-                  {name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl sx={{ m: 1, width: '48%' }} required>
-            <InputLabel id="demo-multiple-name-label">
-              Secondary Tech Stack
-            </InputLabel>
-            <Select
-              labelId="demo-multiple-name-label"
-              id="demo-multiple-name"
-              multiple
-              value={projectOverAllSummary.secondry_technology}
-              name="secondaryTeckStack"
-              onChange={({ target: { value } }) => {
-                if (typeof value === 'string') {
-                  return
-                }
-                dispatch(changeSecondryTechStack({ secondry_technology: value }))
-              }}
-              input={<OutlinedInput label="Secondary Tech Stack" />}
-              MenuProps={MenuProps}
-              renderValue={(selected) => (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selected.map(
-                    (
-                      value:
-                      | boolean
-                      | React.ReactElement<
-                      any,
-                      string | React.JSXElementConstructor<any>
-                      >
-                      | React.ReactFragment
-                      | React.Key
-                      | null
-                      | undefined,
-                      index
-                    ) => (
+                    ))}
+                  </Box>
+                )}
+              >
+                {names.map((name) => (
+                  <MenuItem
+                    key={name}
+                    value={name}
+                    style={getStyles(name, 'userData', theme)}
+                  >
+                    {name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl sx={{ m: 1, width: '48%' }} required>
+              <InputLabel id="demo-multiple-name-label">
+                Secondary Tech Stack
+              </InputLabel>
+              <Select
+                labelId="demo-multiple-name-label"
+                id="demo-multiple-name"
+                multiple
+                value={projectOverAllSummary.secondry_technology}
+                name="secondaryTeckStack"
+                onChange={({ target: { value } }) => {
+                  if (typeof value === 'string') {
+                    return
+                  }
+                  dispatch(
+                    changeSecondryTechStack({ secondry_technology: value })
+                  )
+                }}
+                input={<OutlinedInput label="Secondary Tech Stack" />}
+                MenuProps={MenuProps}
+                renderValue={(selected) => (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {selected.map((value, index) => (
                       <Chip
                         key={index}
                         label={value}
@@ -590,23 +617,23 @@ const ProjectOverAllSummary = (): JSX.Element => {
                         //   handleDelete()
                         // }}
                       />
-                    )
-                  )}
-                </Box>
-              )}
-            >
-              {names.map((name) => (
-                <MenuItem
-                  key={name}
-                  value={name}
-                  style={getStyles(name, 'userData', theme)}
-                >
-                  {name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl sx={{ m: 1, width: '48%' }} required>
+                    ))}
+                  </Box>
+                )}
+              >
+                {names.map((name) => (
+                  <MenuItem
+                    key={name}
+                    value={name}
+                    style={getStyles(name, 'userData', theme)}
+                  >
+                    {name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+          {/* <FormControl sx={{ m: 1, width: '48%' }} required>
             <InputLabel id="demo-multiple-name-label">
               Account Managers
             </InputLabel>
@@ -807,7 +834,9 @@ const ProjectOverAllSummary = (): JSX.Element => {
               aria-labelledby="demo-row-radio-buttons-group-label"
               name="row-radio-buttons-group"
               onChange={(e) => {
-                dispatch(changeProjectSow({ project_sow: Number(e.target.value) }))
+                dispatch(
+                  changeProjectSow({ project_sow: Number(e.target.value) })
+                )
               }}
             >
               <Box
@@ -847,7 +876,7 @@ const ProjectOverAllSummary = (): JSX.Element => {
                 />
               </Box>
             </RadioGroup>
-          </FormControl>
+          </FormControl> */}
         </Box>
       </Box>
     </>

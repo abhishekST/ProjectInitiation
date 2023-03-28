@@ -1,6 +1,7 @@
 const envVars = process.env
 
 export const configuration = {
-  uri: (envVars.REACT_APP_SVC_URI ?? 'http://localhost:3000'),
-  token: envVars.REACT_APP_TOKEN
+  resourceUrl: envVars.REACT_APP_RESOURCE_API_URL ?? '',
+  projectUrl: envVars.REACT_APP_PROJECT_API_URL ?? '',
+  fetchResourceUrl: envVars.REACT_APP_FETCH_RESOURCE_API_URL ?? ''
 }

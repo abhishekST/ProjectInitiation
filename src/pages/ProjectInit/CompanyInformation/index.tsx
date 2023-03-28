@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, type ChangeEvent } from 'react'
 import {
   changeClient,
   changeCompanyAddress,
@@ -27,14 +27,14 @@ import { useTheme, type Theme } from '@mui/material/styles'
 import Textarea from '@mui/joy/Textarea'
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
 import { deepOrange } from '@mui/material/colors'
-import axios from 'axios'
 import CancelIcon from '@mui/icons-material/Cancel'
 import { useDispatch, useSelector } from 'react-redux'
 import { type RootState } from '../../../store'
 import AddClientDialog from '../../../components/AddClientDialog'
 import { configuration } from '../../../configs/configuration'
 import { countryData } from '../../../constant/countryData'
-// import { countryData } from '../../../constant/countryData'
+import { fetch } from '../../../utils/helper'
+import { type Project, type GetClientFromCompany } from '../../../interface/componentInformation'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -56,7 +56,7 @@ function getStyles (_name: string, _personName: any, theme: Theme) {
 
 const ClientInformation = (_props: any): JSX.Element => {
   const companyInfo = useSelector((state: RootState) => state.companyInfo)
-  const [projectsName, setProjectsName] = useState([])
+  const [projectsName, setProjectsName] = useState([] as Project[])
   const dispatch = useDispatch()
   const theme = useTheme()
 
@@ -82,17 +82,9 @@ const ClientInformation = (_props: any): JSX.Element => {
       str += `${index !== 0 ? '&' : ''}id[]=${id}`
     })
 
-    axios
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      .get(`${configuration.uri}/v1/get-company-from-client?${str}`, {
-        headers: {
-          authorization:
-            'eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk3OWVkMTU1OTdhYjM1Zjc4MjljZTc0NDMwN2I3OTNiN2ViZWIyZjAiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiQWJoaXNoZWsgU2luZ2giLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUdObXl4WjROM0g5NE9UaFdlXy1LdUFXS0lBQkRzX2xGckh4TjJxLXVIUWE9czk2LWMiLCJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vcmVzb3VyY2UtYXZhaWFiaWxpdHkiLCJhdWQiOiJyZXNvdXJjZS1hdmFpYWJpbGl0eSIsImF1dGhfdGltZSI6MTY3OTk3NTQxNCwidXNlcl9pZCI6IjdFbTN3UVdEU0lWam9xZWlzUUF0Mm9DU01SQzMiLCJzdWIiOiI3RW0zd1FXRFNJVmpvcWVpc1FBdDJvQ1NNUkMzIiwiaWF0IjoxNjc5OTc1NDE0LCJleHAiOjE2Nzk5NzkwMTQsImVtYWlsIjoiYWJoaXNoZWsuc2luZ2hAc3VjY2Vzc2l2ZS50ZWNoIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZ29vZ2xlLmNvbSI6WyIxMDgwODY5MzI0MjY0MzUyNTk2MTMiXSwiZW1haWwiOlsiYWJoaXNoZWsuc2luZ2hAc3VjY2Vzc2l2ZS50ZWNoIl19LCJzaWduX2luX3Byb3ZpZGVyIjoiZ29vZ2xlLmNvbSJ9fQ.I1insGWvhzkrGdKaZlMvQ9w07nGXPvf0hhafi0N48dNLMT7dLb8UN6h1NO7ewWRiCmEsj5O9jx4r0ne2ThvNgHIIp5cd__DF_SobVqigD6yrZT6hQFIE4n5domCOFBoQChIG9vJujRlSj_r4psKik7WQhHFa72HpIWHfkjZ9NYnQjvEXscGOkmTZdvbkJeVXU-PlQ0glIlaxq3myEJct7z01WgLRp7fg5bY__uRTBrw01f3gOs0lV2o-FlVrldumkh3xI0WoIY-tRcH0JOq91Wzot-Vj0WLkqSxzrSDS6lnj_O5bf2HMABV-8V1IdXu3g4qwNq2QKMBURxUw9jMVNg'
-        }
-      })
-      .then((response) => {
+    Promise.all([fetch(configuration.resourceUrl, `get-company-from-client?${str}`)])
+      .then(([response]) => {
         const companyInformation = response?.data?.data ?? []
-        console.log(companyInformation)
         const companyLocation = companyInformation.company_name[0]
         dispatch(changeCompanyCountry({ country: companyLocation.country }))
         dispatch(changeCompanyState({ state: companyLocation.state }))
@@ -101,6 +93,30 @@ const ClientInformation = (_props: any): JSX.Element => {
         )
         dispatch(changeCompany({ company: companyLocation.company_name }))
         setProjectsName((companyInformation?.project_name !== undefined) ? companyInformation.project_name : [])
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
+
+  const handleCompanyChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+    const companyName = event.target.value
+    dispatch(
+      changeCompany({
+        company: companyName
+      })
+    )
+
+    Promise.all([fetch(configuration.resourceUrl, `get-client-from-company?company_name=${companyName}`)])
+      .then(([response]) => {
+        const companyInformation = response.data.data as GetClientFromCompany
+        dispatch(changeCompanyCountry({ country: companyInformation.country }))
+        dispatch(changeCompanyState({ state: companyInformation.state }))
+        dispatch(
+          changeCompanyAddress({ address: companyInformation.company_address })
+        )
+        dispatch(changeClient({ client_detail: companyInformation?.client_name.map(({ id }) => id) }))
+        setProjectsName((companyInformation.project_name !== undefined) ? companyInformation.project_name : [])
       })
       .catch((error) => {
         console.log(error)
@@ -117,15 +133,8 @@ const ClientInformation = (_props: any): JSX.Element => {
 
   useEffect(() => {
     const timeoutIdForClient = setTimeout(() => {
-      axios
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        .get(`${configuration.uri}/v1/client`, {
-          headers: {
-            authorization:
-              'eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk3OWVkMTU1OTdhYjM1Zjc4MjljZTc0NDMwN2I3OTNiN2ViZWIyZjAiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiQWJoaXNoZWsgU2luZ2giLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUdObXl4WjROM0g5NE9UaFdlXy1LdUFXS0lBQkRzX2xGckh4TjJxLXVIUWE9czk2LWMiLCJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vcmVzb3VyY2UtYXZhaWFiaWxpdHkiLCJhdWQiOiJyZXNvdXJjZS1hdmFpYWJpbGl0eSIsImF1dGhfdGltZSI6MTY3OTk3NTQxNCwidXNlcl9pZCI6IjdFbTN3UVdEU0lWam9xZWlzUUF0Mm9DU01SQzMiLCJzdWIiOiI3RW0zd1FXRFNJVmpvcWVpc1FBdDJvQ1NNUkMzIiwiaWF0IjoxNjc5OTc1NDE0LCJleHAiOjE2Nzk5NzkwMTQsImVtYWlsIjoiYWJoaXNoZWsuc2luZ2hAc3VjY2Vzc2l2ZS50ZWNoIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZ29vZ2xlLmNvbSI6WyIxMDgwODY5MzI0MjY0MzUyNTk2MTMiXSwiZW1haWwiOlsiYWJoaXNoZWsuc2luZ2hAc3VjY2Vzc2l2ZS50ZWNoIl19LCJzaWduX2luX3Byb3ZpZGVyIjoiZ29vZ2xlLmNvbSJ9fQ.I1insGWvhzkrGdKaZlMvQ9w07nGXPvf0hhafi0N48dNLMT7dLb8UN6h1NO7ewWRiCmEsj5O9jx4r0ne2ThvNgHIIp5cd__DF_SobVqigD6yrZT6hQFIE4n5domCOFBoQChIG9vJujRlSj_r4psKik7WQhHFa72HpIWHfkjZ9NYnQjvEXscGOkmTZdvbkJeVXU-PlQ0glIlaxq3myEJct7z01WgLRp7fg5bY__uRTBrw01f3gOs0lV2o-FlVrldumkh3xI0WoIY-tRcH0JOq91Wzot-Vj0WLkqSxzrSDS6lnj_O5bf2HMABV-8V1IdXu3g4qwNq2QKMBURxUw9jMVNg'
-          }
-        })
-        .then((response) => {
+      Promise.all([fetch(configuration.resourceUrl, 'client')])
+        .then(([response]) => {
           setGetClientListData(response?.data?.data ?? [])
         })
         .catch((error) => {
@@ -241,9 +250,7 @@ const ClientInformation = (_props: any): JSX.Element => {
               label="Company"
               placeholder="Company Name"
               value={companyInfo.company}
-              onChange={(event) => {
-                dispatch(changeCompany({ company: event.target.value }))
-              }}
+              onChange={handleCompanyChange}
               onBlur={() => dispatch(validateField({ field: 'company' }))}
               margin="normal"
               fullWidth
