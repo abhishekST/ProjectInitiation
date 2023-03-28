@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import {
   changeClient,
-  changeClientAddress,
-  changeClientCountry,
-  changeClientCompany,
-  changeClientState,
-  type client,
+  changeCompanyAddress,
+  changeCompanyCountry,
+  changeCompany,
+  changeCompanyState,
   validateField
 } from './reducer'
 import {
@@ -30,11 +29,11 @@ import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
 import { deepOrange } from '@mui/material/colors'
 import axios from 'axios'
 import CancelIcon from '@mui/icons-material/Cancel'
-import { projectInitiaonMock } from '../mock'
 import { useDispatch, useSelector } from 'react-redux'
 import { type RootState } from '../../../store'
 import AddClientDialog from '../../../components/AddClientDialog'
 import { configuration } from '../../../configs/configuration'
+import { countryData } from '../../../constant/countryData'
 // import { countryData } from '../../../constant/countryData'
 
 const ITEM_HEIGHT = 48
@@ -56,24 +55,56 @@ function getStyles (_name: string, _personName: any, theme: Theme) {
 }
 
 const ClientInformation = (_props: any): JSX.Element => {
-  const clientInfo = useSelector((state: RootState) => state.clientInfo)
+  const companyInfo = useSelector((state: RootState) => state.companyInfo)
+  const [projectsName, setProjectsName] = useState([])
   const dispatch = useDispatch()
-  const { phaseData } = projectInitiaonMock
   const theme = useTheme()
 
   const [openDialog, setOpenDialog] = React.useState(false)
-  const [getClientListData, setGetClientListData] = useState([] as client[])
+  const [getClientListData, setGetClientListData] = useState(
+    [] as Array<{ id: number, name: string, emails: string }>
+  )
 
-  const handleClientChange = (event: SelectChangeEvent<client[]>): void => {
+  const handleClientChange = (event: SelectChangeEvent<number[]>): void => {
     const selectedValues = event.target.value
     if (typeof selectedValues === 'string') {
       return
     }
     dispatch(
       changeClient({
-        clients: selectedValues
+        client_detail: selectedValues
       })
     )
+
+    let str = ''
+
+    selectedValues.forEach((id, index) => {
+      str += `${index !== 0 ? '&' : ''}id[]=${id}`
+    })
+
+    axios
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      .get(`${configuration.uri}/v1/get-company-from-client?${str}`, {
+        headers: {
+          authorization:
+            'eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk3OWVkMTU1OTdhYjM1Zjc4MjljZTc0NDMwN2I3OTNiN2ViZWIyZjAiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiQWJoaXNoZWsgU2luZ2giLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUdObXl4WjROM0g5NE9UaFdlXy1LdUFXS0lBQkRzX2xGckh4TjJxLXVIUWE9czk2LWMiLCJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vcmVzb3VyY2UtYXZhaWFiaWxpdHkiLCJhdWQiOiJyZXNvdXJjZS1hdmFpYWJpbGl0eSIsImF1dGhfdGltZSI6MTY3OTk3NTQxNCwidXNlcl9pZCI6IjdFbTN3UVdEU0lWam9xZWlzUUF0Mm9DU01SQzMiLCJzdWIiOiI3RW0zd1FXRFNJVmpvcWVpc1FBdDJvQ1NNUkMzIiwiaWF0IjoxNjc5OTc1NDE0LCJleHAiOjE2Nzk5NzkwMTQsImVtYWlsIjoiYWJoaXNoZWsuc2luZ2hAc3VjY2Vzc2l2ZS50ZWNoIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZ29vZ2xlLmNvbSI6WyIxMDgwODY5MzI0MjY0MzUyNTk2MTMiXSwiZW1haWwiOlsiYWJoaXNoZWsuc2luZ2hAc3VjY2Vzc2l2ZS50ZWNoIl19LCJzaWduX2luX3Byb3ZpZGVyIjoiZ29vZ2xlLmNvbSJ9fQ.I1insGWvhzkrGdKaZlMvQ9w07nGXPvf0hhafi0N48dNLMT7dLb8UN6h1NO7ewWRiCmEsj5O9jx4r0ne2ThvNgHIIp5cd__DF_SobVqigD6yrZT6hQFIE4n5domCOFBoQChIG9vJujRlSj_r4psKik7WQhHFa72HpIWHfkjZ9NYnQjvEXscGOkmTZdvbkJeVXU-PlQ0glIlaxq3myEJct7z01WgLRp7fg5bY__uRTBrw01f3gOs0lV2o-FlVrldumkh3xI0WoIY-tRcH0JOq91Wzot-Vj0WLkqSxzrSDS6lnj_O5bf2HMABV-8V1IdXu3g4qwNq2QKMBURxUw9jMVNg'
+        }
+      })
+      .then((response) => {
+        const companyInformation = response?.data?.data ?? []
+        console.log(companyInformation)
+        const companyLocation = companyInformation.company_name[0]
+        dispatch(changeCompanyCountry({ country: companyLocation.country }))
+        dispatch(changeCompanyState({ state: companyLocation.state }))
+        dispatch(
+          changeCompanyAddress({ address: companyLocation.company_address })
+        )
+        dispatch(changeCompany({ company: companyLocation.company_name }))
+        setProjectsName((companyInformation?.project_name !== undefined) ? companyInformation.project_name : [])
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }
 
   const handleClickOpen = (): void => {
@@ -88,7 +119,12 @@ const ClientInformation = (_props: any): JSX.Element => {
     const timeoutIdForClient = setTimeout(() => {
       axios
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        .get(`${configuration.uri}/v1/client`, { headers: { authorization: configuration.token } })
+        .get(`${configuration.uri}/v1/client`, {
+          headers: {
+            authorization:
+              'eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk3OWVkMTU1OTdhYjM1Zjc4MjljZTc0NDMwN2I3OTNiN2ViZWIyZjAiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiQWJoaXNoZWsgU2luZ2giLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUdObXl4WjROM0g5NE9UaFdlXy1LdUFXS0lBQkRzX2xGckh4TjJxLXVIUWE9czk2LWMiLCJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vcmVzb3VyY2UtYXZhaWFiaWxpdHkiLCJhdWQiOiJyZXNvdXJjZS1hdmFpYWJpbGl0eSIsImF1dGhfdGltZSI6MTY3OTk3NTQxNCwidXNlcl9pZCI6IjdFbTN3UVdEU0lWam9xZWlzUUF0Mm9DU01SQzMiLCJzdWIiOiI3RW0zd1FXRFNJVmpvcWVpc1FBdDJvQ1NNUkMzIiwiaWF0IjoxNjc5OTc1NDE0LCJleHAiOjE2Nzk5NzkwMTQsImVtYWlsIjoiYWJoaXNoZWsuc2luZ2hAc3VjY2Vzc2l2ZS50ZWNoIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZ29vZ2xlLmNvbSI6WyIxMDgwODY5MzI0MjY0MzUyNTk2MTMiXSwiZW1haWwiOlsiYWJoaXNoZWsuc2luZ2hAc3VjY2Vzc2l2ZS50ZWNoIl19LCJzaWduX2luX3Byb3ZpZGVyIjoiZ29vZ2xlLmNvbSJ9fQ.I1insGWvhzkrGdKaZlMvQ9w07nGXPvf0hhafi0N48dNLMT7dLb8UN6h1NO7ewWRiCmEsj5O9jx4r0ne2ThvNgHIIp5cd__DF_SobVqigD6yrZT6hQFIE4n5domCOFBoQChIG9vJujRlSj_r4psKik7WQhHFa72HpIWHfkjZ9NYnQjvEXscGOkmTZdvbkJeVXU-PlQ0glIlaxq3myEJct7z01WgLRp7fg5bY__uRTBrw01f3gOs0lV2o-FlVrldumkh3xI0WoIY-tRcH0JOq91Wzot-Vj0WLkqSxzrSDS6lnj_O5bf2HMABV-8V1IdXu3g4qwNq2QKMBURxUw9jMVNg'
+          }
+        })
         .then((response) => {
           setGetClientListData(response?.data?.data ?? [])
         })
@@ -120,7 +156,7 @@ const ClientInformation = (_props: any): JSX.Element => {
               labelId="demo-multiple-name-label"
               id="demo-multiple-name"
               multiple
-              value={clientInfo.client}
+              value={companyInfo.client_detail}
               onChange={handleClientChange}
               onBlur={() => dispatch(validateField({ field: 'client' }))}
               input={<OutlinedInput label="Client" />}
@@ -141,7 +177,7 @@ const ClientInformation = (_props: any): JSX.Element => {
                             N
                           </Avatar>
                         }
-                        key={item.name}
+                        key={item}
                         variant="outlined"
                         clickable
                         onDelete={(e) => {}}
@@ -156,9 +192,17 @@ const ClientInformation = (_props: any): JSX.Element => {
                         sx={{ border: 'none' }}
                         label={
                           <div>
-                            <Typography sx={{ mb: -1 }}>{item.name}</Typography>
+                            <Typography sx={{ mb: -1 }}>
+                              {
+                                getClientListData?.find(({ id }) => item === id)
+                                  ?.name
+                              }
+                            </Typography>
                             <Typography variant="caption">
-                              {item.emails}
+                              {
+                                getClientListData?.find(({ id }) => item === id)
+                                  ?.emails
+                              }
                             </Typography>
                           </div>
                         }
@@ -169,8 +213,7 @@ const ClientInformation = (_props: any): JSX.Element => {
             >
               {Boolean(getClientListData?.length) &&
                 getClientListData.map((itm) => (
-                  // @ts-expect-error [1]
-                  <MenuItem key={itm.id} value={itm}>
+                  <MenuItem key={itm.id} value={itm.id}>
                     <Avatar
                       sx={{
                         mr: 1,
@@ -192,20 +235,20 @@ const ClientInformation = (_props: any): JSX.Element => {
               <FormHelperText>This field is required</FormHelperText>
             )} */}
           </FormControl>
-          <TextField
-            required
-            id="full-width-text-field"
-            label="Company"
-            placeholder="Company Name"
-            value={clientInfo.company}
-            onChange={(event) => {
-              dispatch(changeClientCompany({ company: event.target.value }))
-            }}
-            onBlur={() => dispatch(validateField({ field: 'company' }))}
-            margin="normal"
-            fullWidth
-            helperText="ddd"
-          />
+            <TextField
+              required
+              id="full-width-text-field"
+              label="Company"
+              placeholder="Company Name"
+              value={companyInfo.company}
+              onChange={(event) => {
+                dispatch(changeCompany({ company: event.target.value }))
+              }}
+              onBlur={() => dispatch(validateField({ field: 'company' }))}
+              margin="normal"
+              fullWidth
+              helperText={projectsName.map(({ name }) => name)}
+            />
           <Button
             sx={{ m: 1, mt: 3, mb: 3 }}
             variant="outlined"
@@ -233,10 +276,10 @@ const ClientInformation = (_props: any): JSX.Element => {
               labelId="demo-multiple-name-label"
               id="demo-multiple-name"
               // multiple
-              value={clientInfo.country}
+              value={companyInfo.country}
               onChange={(event) => {
                 dispatch(
-                  changeClientCountry({
+                  changeCompanyCountry({
                     country: event.target.value
                   })
                 )
@@ -266,10 +309,10 @@ const ClientInformation = (_props: any): JSX.Element => {
                 </Box>
               )}
             >
-              {phaseData.map((itm) => (
+              {countryData.map(({ countryName }) => (
                 <MenuItem
-                  key={itm.name}
-                  value={itm.name}
+                  key={countryName}
+                  value={countryName}
                   // style={getStyles(itm.name, userData, theme)}
                 >
                   <Avatar
@@ -282,7 +325,7 @@ const ClientInformation = (_props: any): JSX.Element => {
                   >
                     {/* <IconFlagIN /> */}
                   </Avatar>
-                  <Typography>{itm.name}</Typography>
+                  <Typography>{countryName}</Typography>
                   {/* <IconFlagIN  /> */}
                 </MenuItem>
               ))}
@@ -295,23 +338,25 @@ const ClientInformation = (_props: any): JSX.Element => {
               id="demo-multiple-name"
               // multiple
               required
-              value={clientInfo.state}
+              value={companyInfo.state}
               onChange={(event) => {
-                dispatch(changeClientState({ state: event.target.value }))
+                dispatch(changeCompanyState({ state: event.target.value }))
               }}
               onBlur={() => dispatch(validateField({ field: 'state' }))}
               input={<OutlinedInput label="State" />}
               MenuProps={MenuProps}
             >
-              {names.map((name) => (
-                <MenuItem
-                  key={name}
-                  value={name}
-                  style={getStyles(name, clientInfo, theme)}
-                >
-                  {name}
-                </MenuItem>
-              ))}
+              {countryData
+                .find(({ countryName }) => countryName === companyInfo.country)
+                ?.regions.map(({ name }) => (
+                  <MenuItem
+                    key={name}
+                    value={name}
+                    style={getStyles(name, companyInfo, theme)}
+                  >
+                    {name}
+                  </MenuItem>
+                ))}
             </Select>
           </FormControl>
 
@@ -320,9 +365,9 @@ const ClientInformation = (_props: any): JSX.Element => {
             <Textarea
               placeholder="Address"
               minRows={2}
-              value={clientInfo.address}
+              value={companyInfo.address}
               onChange={({ target: { value } }) => {
-                dispatch(changeClientAddress({ address: value }))
+                dispatch(changeCompanyAddress({ address: value }))
               }}
               onBlur={() => dispatch(validateField({ field: 'address' }))}
             />

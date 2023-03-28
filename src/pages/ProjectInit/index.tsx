@@ -37,7 +37,7 @@ const ProjectOverAllSummary = React.lazy(
   async () => await import('./ProjectOverAllSummary')
 )
 const ClientInformation = React.lazy(
-  async () => await import('./ClientInformation')
+  async () => await import('./CompanyInformation')
 )
 const TimelineAndFunding = React.lazy(
   async () => await import('./TimelineAndFunding')

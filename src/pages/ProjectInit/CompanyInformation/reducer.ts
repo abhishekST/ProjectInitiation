@@ -3,71 +3,65 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 import { revertAll } from '../../../store'
 import { clientInfoValidationSchema } from './validationSchema'
 
-export interface client {
-  id: number
-  name: string
-  emails: string
-}
-
-interface clientError {
+interface companyError {
   address: undefined | string
-  client: undefined | string
+  client_detail: undefined | string
   country: undefined | string
   state: undefined | string
   company: undefined | string
 }
 
-export interface ClientInformationState {
+export interface CompanyInformationState {
   address: string
-  client: client[]
+  client_detail: number[]
   country: string
   company: string
   state: string
-  errors: clientError
+  errors: companyError
 }
 
-const initialState: ClientInformationState = {
+const initialState: CompanyInformationState = {
   address: '',
-  client: [],
+  client_detail: [],
   country: '',
   company: '',
   state: '',
   errors: {
     address: undefined,
-    client: undefined,
+    client_detail: undefined,
     country: undefined,
     state: undefined,
     company: undefined
   }
 }
 
-export const clientInformationSlice = createSlice({
-  name: 'clientInformation',
+export const companyInformationSlice = createSlice({
+  name: 'companyInformation',
   initialState,
   extraReducers: (builder) => builder.addCase(revertAll, () => initialState),
   reducers: {
-    changeClient: (state, action: PayloadAction<{ clients: client[] }>) => {
-      state.client = action.payload.clients
+    changeClient: (state, action: PayloadAction<{ client_detail: number[] }>) => {
+      state.client_detail = action.payload.client_detail
     },
-    changeClientAddress: (
+    changeCompanyAddress: (
       state,
       action: PayloadAction<{ address: string }>
     ) => {
       state.address = action.payload.address
     },
-    changeClientCountry: (
+    changeCompanyCountry: (
       state,
       action: PayloadAction<{ country: string }>
     ) => {
       state.country = action.payload.country
     },
-    changeClientCompany: (
+    changeCompany: (
       state,
       action: PayloadAction<{ company: string }>
     ) => {
       state.company = action.payload.company
     },
-    changeClientState: (state, action: PayloadAction<{ state: string }>) => {
+    changeCompanyState: (state, action: PayloadAction<{ state: string }>) => {
       state.state = action.payload.state
     },
     validateField: (state, action: PayloadAction<{ field: string }>) => {
@@ -86,11 +80,11 @@ export const clientInformationSlice = createSlice({
 
 export const {
   changeClient,
-  changeClientAddress,
-  changeClientCountry,
-  changeClientState,
-  changeClientCompany,
+  changeCompanyAddress,
+  changeCompanyCountry,
+  changeCompanyState,
+  changeCompany,
   validateField
-} = clientInformationSlice.actions
+} = companyInformationSlice.actions
 
-export default clientInformationSlice.reducer
+export default companyInformationSlice.reducer

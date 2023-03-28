@@ -1,5 +1,5 @@
 import { configureStore, createAction } from '@reduxjs/toolkit'
-import ClientInfoReducer from '../pages/ProjectInit/ClientInformation/reducer'
+import CompanyInfoReducer from '../pages/ProjectInit/CompanyInformation/reducer'
 import ProjectOverAllSummaryReducer from '../pages/ProjectInit/ProjectOverAllSummary/reducer'
 import TimelineAndFundingReducer from '../pages/ProjectInit/TimelineAndFunding/reducer'
 
@@ -7,7 +7,7 @@ export const revertAll = createAction('REVERT_ALL')
 
 export const store = configureStore({
   reducer: {
-    clientInfo: ClientInfoReducer,
+    companyInfo: CompanyInfoReducer,
     projectOverAllSummary: ProjectOverAllSummaryReducer,
     timelineAndFunding: TimelineAndFundingReducer
   }
