@@ -27,7 +27,7 @@ const initialState: ProjectOverallSummary = {
   gov_category_id: null,
   lifecycle_model_id: null,
   project_domain: [],
-  project_component: '[]',
+  project_component: JSON.stringify([]),
   subProject: false,
   parent_id: [],
   primary_technology: [],
@@ -45,45 +45,45 @@ export const projectOverAllSummarySlice = createSlice({
   reducers: {
     changeProjectName: (
       state,
-      action: PayloadAction<{ projectName: string }>
+      action: PayloadAction<{ project_name: string }>
     ) => {
-      state.project_name = action.payload.projectName
+      state.project_name = action.payload.project_name
     },
     changeProductPhase: (
       state,
-      action: PayloadAction<{ projectPhase: number }>
+      action: PayloadAction<{ project_type_id: number }>
     ) => {
-      state.project_type_id = action.payload.projectPhase
+      state.project_type_id = action.payload.project_type_id
     },
     changeProjectType: (
       state,
-      action: PayloadAction<{ projectType: number }>
+      action: PayloadAction<{ billing_type: number }>
     ) => {
-      state.billing_type = action.payload.projectType
+      state.billing_type = action.payload.billing_type
     },
     changeProjectGovernanceModel: (
       state,
-      action: PayloadAction<{ projectGovernanceModel: number }>
+      action: PayloadAction<{ gov_category_id: number }>
     ) => {
-      state.gov_category_id = action.payload.projectGovernanceModel
+      state.gov_category_id = action.payload.gov_category_id
     },
     changeProjectLifeCycle: (
       state,
-      action: PayloadAction<{ projectLifeCycle: number }>
+      action: PayloadAction<{ lifecycle_model_id: number }>
     ) => {
-      state.lifecycle_model_id = action.payload.projectLifeCycle
+      state.lifecycle_model_id = action.payload.lifecycle_model_id
     },
     changeProjectDomain: (
       state,
-      action: PayloadAction<{ projectDomain: number[] }>
+      action: PayloadAction<{ project_domain: number[] }>
     ) => {
-      state.project_domain = action.payload.projectDomain
+      state.project_domain = action.payload.project_domain
     },
     changeProjectParameter: (
       state,
-      action: PayloadAction<{ projectParameter: string }>
+      action: PayloadAction<{ project_component: string }>
     ) => {
-      state.project_component = action.payload.projectParameter
+      state.project_component = action.payload.project_component
     },
     changeSubProject: (
       state,
@@ -93,45 +93,45 @@ export const projectOverAllSummarySlice = createSlice({
     },
     changeParentId: (
       state,
-      action: PayloadAction<{ parentId: number[] }>
+      action: PayloadAction<{ parent_id: number[] }>
     ) => {
-      state.parent_id = action.payload.parentId
+      state.parent_id = action.payload.parent_id
     },
     changePrimaryTechStack: (
       state,
-      action: PayloadAction<{ primaryTechStack: number[] }>
+      action: PayloadAction<{ primary_technology: number[] }>
     ) => {
-      state.primary_technology = action.payload.primaryTechStack
+      state.primary_technology = action.payload.primary_technology
     },
     changeSecondryTechStack: (
       state,
-      action: PayloadAction<{ secondryTechStack: number[] }>
+      action: PayloadAction<{ secondry_technology: number[] }>
     ) => {
-      state.secondry_technology = action.payload.secondryTechStack
+      state.secondry_technology = action.payload.secondry_technology
     },
     changeAccountManagers: (
       state,
-      action: PayloadAction<{ accountManagers: number[] }>
+      action: PayloadAction<{ account_manager: number[] }>
     ) => {
-      state.account_manager = action.payload.accountManagers
+      state.account_manager = action.payload.account_manager
     },
     changeProjectManagers: (
       state,
-      action: PayloadAction<{ projectManagers: number[] }>
+      action: PayloadAction<{ project_manager: number[] }>
     ) => {
-      state.project_manager = action.payload.projectManagers
+      state.project_manager = action.payload.project_manager
     },
     changeProjectSummary: (
       state,
-      action: PayloadAction<{ projectSummary: string }>
+      action: PayloadAction<{ project_summary: string }>
     ) => {
-      state.project_summary = action.payload.projectSummary
+      state.project_summary = action.payload.project_summary
     },
     changeProjectSow: (
       state,
-      action: PayloadAction<{ projectSow: number }>
+      action: PayloadAction<{ project_sow: number }>
     ) => {
-      state.project_sow = action.payload.projectSow
+      state.project_sow = action.payload.project_sow
     }
   }
 })

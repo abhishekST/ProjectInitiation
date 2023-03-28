@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import {
   Box,
@@ -27,7 +27,6 @@ import { projectInitiaonMock } from '../mock'
 import { useDispatch, useSelector } from 'react-redux'
 import { type RootState } from '../../../store'
 import {
-  type AccountManager,
   changeAccountManagers,
   changePrimaryTechStack,
   changeProductPhase,
@@ -40,7 +39,6 @@ import {
   changeSecondryTechStack,
   changeSubProject,
   changeProjectManagers,
-  type ProjectManager,
   changeProjectSummary,
   changeProjectSow
 } from './reducer'
@@ -88,6 +86,20 @@ const ProjectOverAllSummary = (): JSX.Element => {
   const dispatch = useDispatch()
   const theme = useTheme()
 
+  useEffect(() => {
+    const timeoutIdForClient = setTimeout(() => {
+      try{
+        const [] = Promise.all([])
+      } catch(error) {
+
+      }
+    }, 100)
+
+    return () => {
+      clearTimeout(timeoutIdForClient)
+    }
+  }, [])
+
   return (
     <>
       <Box sx={{ mt: 5 }}>
@@ -105,7 +117,7 @@ const ProjectOverAllSummary = (): JSX.Element => {
             label="Project Name"
             placeholder="Enter Name"
             name="projectName"
-            value={projectOverAllSummary.projectName}
+            value={projectOverAllSummary.project_name}
             onChange={({ target: { value } }) => {
               dispatch(changeProjectName({ projectName: value }))
             }}
@@ -118,11 +130,14 @@ const ProjectOverAllSummary = (): JSX.Element => {
               labelId="demo-multiple-name-label"
               id="demo-multiple-name"
               // multiple
-              value={projectOverAllSummary.projectPhase}
+              value={projectOverAllSummary.project_type_id}
               name="phase"
               displayEmpty
               onChange={({ target: { value } }) => {
-                dispatch(changeProductPhase({ projectPhase: value }))
+                if (value === null || typeof value === 'string') {
+                  return
+                }
+                dispatch(changeProductPhase({ project_type_id: value }))
               }}
               input={<OutlinedInput label="Phase" />}
               MenuProps={MenuProps}
@@ -163,10 +178,13 @@ const ProjectOverAllSummary = (): JSX.Element => {
               id="demo-multiple-name"
               // multiple
               required
-              value={projectOverAllSummary.projectType}
+              value={projectOverAllSummary.billing_type}
               name="projectType"
               onChange={({ target: { value } }) => {
-                dispatch(changeProjectType({ projectType: value }))
+                if (typeof value === 'string' || value === null) {
+                  return
+                }
+                dispatch(changeProjectType({ billing_type: value }))
               }}
               input={<OutlinedInput label="Project Type *" />}
               MenuProps={MenuProps}
@@ -174,7 +192,7 @@ const ProjectOverAllSummary = (): JSX.Element => {
                 <IconButton
                   sx={{
                     visibility:
-                      projectOverAllSummary.projectType.length > 0
+                      ((projectOverAllSummary?.billing_type) != null)
                         ? 'visible'
                         : 'hidden'
                   }}
@@ -205,12 +223,15 @@ const ProjectOverAllSummary = (): JSX.Element => {
               labelId="demo-multiple-name-label"
               id="demo-multiple-name"
               // multiple
-              value={projectOverAllSummary.projectGovernanceModel}
+              value={projectOverAllSummary.gov_category_id}
               name="governanceModel"
               onChange={({ target: { value } }) => {
+                if (typeof value === 'string' || value === null) {
+                  return
+                }
                 dispatch(
                   changeProjectGovernanceModel({
-                    projectGovernanceModel: value
+                    gov_category_id: value
                   })
                 )
               }}
@@ -220,7 +241,7 @@ const ProjectOverAllSummary = (): JSX.Element => {
                 <IconButton
                   sx={{
                     visibility:
-                      projectOverAllSummary.projectGovernanceModel.length > 0
+                      (projectOverAllSummary?.gov_category_id != null)
                         ? 'visible'
                         : 'hidden'
                   }}
@@ -251,10 +272,13 @@ const ProjectOverAllSummary = (): JSX.Element => {
               labelId="demo-multiple-name-label"
               id="demo-multiple-name"
               // multiple
-              value={projectOverAllSummary.projectLifeCycle}
+              value={projectOverAllSummary.lifecycle_model_id}
               name="projectLifeCycleModel"
               onChange={({ target: { value } }) => {
-                dispatch(changeProjectLifeCycle({ projectLifeCycle: value }))
+                if (typeof value === 'string' || value === null) {
+                  return
+                }
+                dispatch(changeProjectLifeCycle({ lifecycle_model_id: value }))
               }}
               input={<OutlinedInput label="Project Lifecycle Model" />}
               MenuProps={MenuProps}
@@ -262,7 +286,7 @@ const ProjectOverAllSummary = (): JSX.Element => {
                 <IconButton
                   sx={{
                     visibility:
-                      projectOverAllSummary.projectLifeCycle.length > 0
+                      (projectOverAllSummary.lifecycle_model_id != null)
                         ? 'visible'
                         : 'hidden'
                   }}
@@ -293,13 +317,13 @@ const ProjectOverAllSummary = (): JSX.Element => {
               labelId="demo-multiple-name-label"
               id="demo-multiple-name"
               multiple
-              value={projectOverAllSummary.projectDomain}
+              value={projectOverAllSummary.project_domain}
               name="projectDomain"
               onChange={({ target: { value } }) => {
                 if (typeof value === 'string') {
                   return
                 }
-                dispatch(changeProjectDomain({ projectDomain: value }))
+                dispatch(changeProjectDomain({ project_domain: value }))
               }}
               input={<OutlinedInput label="Project Domain" />}
               MenuProps={MenuProps}
@@ -358,19 +382,19 @@ const ProjectOverAllSummary = (): JSX.Element => {
               labelId="demo-multiple-name-label"
               id="demo-multiple-name"
               multiple
-              value={projectOverAllSummary.projectParameter}
+              value={JSON.parse(projectOverAllSummary.project_component)}
               name="parameters"
               onChange={({ target: { value } }) => {
                 if (typeof value === 'string') {
                   return
                 }
-                dispatch(changeProjectParameter({ projectParameter: value }))
+                dispatch(changeProjectParameter({ project_component: value }))
               }}
               input={<OutlinedInput label="Parameters" />}
               MenuProps={MenuProps}
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selected.map(
+                  {selected?.map(
                     (
                       value:
                       | boolean
@@ -456,13 +480,13 @@ const ProjectOverAllSummary = (): JSX.Element => {
               labelId="demo-multiple-name-label"
               id="demo-multiple-name"
               multiple
-              value={projectOverAllSummary.primaryTechStack}
+              value={projectOverAllSummary.primary_technology}
               name="primaryTeckStack"
               onChange={({ target: { value } }) => {
                 if (typeof value === 'string') {
                   return
                 }
-                dispatch(changePrimaryTechStack({ primaryTechStack: value }))
+                dispatch(changePrimaryTechStack({ primary_technology: value }))
               }}
               input={<OutlinedInput label="Primary Tech Stack" />}
               MenuProps={MenuProps}
@@ -523,13 +547,13 @@ const ProjectOverAllSummary = (): JSX.Element => {
               labelId="demo-multiple-name-label"
               id="demo-multiple-name"
               multiple
-              value={projectOverAllSummary.secondryTechStack}
+              value={projectOverAllSummary.secondry_technology}
               name="secondaryTeckStack"
               onChange={({ target: { value } }) => {
                 if (typeof value === 'string') {
                   return
                 }
-                dispatch(changeSecondryTechStack({ secondryTechStack: value }))
+                dispatch(changeSecondryTechStack({ secondry_technology: value }))
               }}
               input={<OutlinedInput label="Secondary Tech Stack" />}
               MenuProps={MenuProps}
@@ -590,19 +614,19 @@ const ProjectOverAllSummary = (): JSX.Element => {
               labelId="demo-multiple-name-label"
               id="demo-multiple-name"
               multiple
-              value={projectOverAllSummary.accountManagers}
+              value={projectOverAllSummary.account_manager}
               name="accountManagers"
               onChange={({ target: { value } }) => {
                 if (typeof value === 'string') {
                   return
                 }
-                dispatch(changeAccountManagers({ accountManagers: value }))
+                dispatch(changeAccountManagers({ account_manager: value }))
               }}
               input={<OutlinedInput label="Account Managers" />}
               MenuProps={MenuProps}
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selected.map((value: AccountManager, index) => (
+                  {selected.map((value, index) => (
                     <Chip
                       avatar={
                         <Avatar
@@ -681,19 +705,19 @@ const ProjectOverAllSummary = (): JSX.Element => {
               labelId="demo-multiple-name-label"
               id="demo-multiple-name"
               multiple
-              value={projectOverAllSummary.projectManagers}
+              value={projectOverAllSummary.project_manager}
               name="projectManagers"
               onChange={({ target: { value } }) => {
                 if (typeof value === 'string') {
                   return
                 }
-                dispatch(changeProjectManagers({ projectManagers: value }))
+                dispatch(changeProjectManagers({ project_manager: value }))
               }}
               input={<OutlinedInput label="Project Managers" />}
               MenuProps={MenuProps}
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selected.map((value: ProjectManager) => (
+                  {selected.map((value) => (
                     <Chip
                       avatar={
                         <Avatar
@@ -769,10 +793,10 @@ const ProjectOverAllSummary = (): JSX.Element => {
             <Textarea
               placeholder="Project Summary"
               minRows={2}
-              value={projectOverAllSummary.projectSummary}
+              value={projectOverAllSummary.project_summary}
               name="summary"
               onChange={({ target: { value } }) => {
-                dispatch(changeProjectSummary({ projectSummary: value }))
+                dispatch(changeProjectSummary({ project_summary: value }))
               }}
             />
           </FormControl>
@@ -783,7 +807,7 @@ const ProjectOverAllSummary = (): JSX.Element => {
               aria-labelledby="demo-row-radio-buttons-group-label"
               name="row-radio-buttons-group"
               onChange={(e) => {
-                dispatch(changeProjectSow({ projectSow: e.target.value }))
+                dispatch(changeProjectSow({ project_sow: Number(e.target.value) }))
               }}
             >
               <Box
@@ -792,14 +816,14 @@ const ProjectOverAllSummary = (): JSX.Element => {
                   pl: '10px',
                   border: '1px solid grey',
                   backgroundColor:
-                    projectOverAllSummary.projectSow === 'yes'
+                    projectOverAllSummary.project_sow === 1
                       ? '#e6f2ff'
                       : 'white'
                 }}
               >
                 <FormControlLabel
-                  value="yes"
-                  checked={projectOverAllSummary.projectSow === 'yes'}
+                  value={1}
+                  checked={projectOverAllSummary.project_sow === 1}
                   control={<Radio />}
                   label="Yes"
                 />
@@ -810,14 +834,14 @@ const ProjectOverAllSummary = (): JSX.Element => {
                   pl: '10px',
                   border: '1px solid grey',
                   backgroundColor:
-                    projectOverAllSummary.projectSow === 'no'
+                    projectOverAllSummary.project_sow === 0
                       ? '#e6f2ff'
                       : 'white'
                 }}
               >
                 <FormControlLabel
                   value="no"
-                  checked={projectOverAllSummary.projectSow === 'no'}
+                  checked={projectOverAllSummary.project_sow === 0}
                   control={<Radio />}
                   label="No"
                 />
