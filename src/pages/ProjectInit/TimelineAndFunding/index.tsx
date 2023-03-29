@@ -21,6 +21,7 @@ import {
   changeProjectBilling,
   changeStartDate
 } from './reducer'
+import * as dayjs from 'dayjs'
 
 const TimelineAndFunding = (): JSX.Element => {
   const timelineAndFunding = useSelector(
@@ -42,11 +43,11 @@ const TimelineAndFunding = (): JSX.Element => {
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
               label="Start Date *"
-              value={timelineAndFunding.estimated_timeline_from}
+              value={dayjs.default(timelineAndFunding.estimated_timeline_from)}
               onChange={(value) => {
                 dispatch(
                   changeStartDate({
-                    estimated_timeline_from: value
+                    estimated_timeline_from: value?.format('MM-DD-YYYY') ?? null
                   })
                 )
               }}
@@ -55,11 +56,19 @@ const TimelineAndFunding = (): JSX.Element => {
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
               label="End Date *"
-              value={timelineAndFunding.estimated_timeline_to}
+              disablePast
+              shouldDisableDate={(date) => date.isBefore(dayjs.default(timelineAndFunding.estimated_timeline_from))}
+              value={
+                dayjs
+                  .default(timelineAndFunding.estimated_timeline_to)
+                  .isValid()
+                  ? dayjs.default(timelineAndFunding.estimated_timeline_to)
+                  : null
+              }
               onChange={(value) => {
                 dispatch(
                   changeEndDate({
-                    estimated_timeline_to: value
+                    estimated_timeline_to: value?.format('MM-DD-YYYY') ?? null
                   })
                 )
               }}
@@ -81,7 +90,11 @@ const TimelineAndFunding = (): JSX.Element => {
             label="Number of days"
             placeholder="0000"
             disabled
-            value={`${timelineAndFunding.approved_hours !== null ? Number(timelineAndFunding.approved_hours) / 24 : 0} Days}`}
+            value={`${
+              timelineAndFunding.approved_hours !== null
+                ? Number(timelineAndFunding.approved_hours) / 24
+                : 0
+            } Days`}
           />
           <TextField
             required
@@ -240,9 +253,7 @@ const TimelineAndFunding = (): JSX.Element => {
               >
                 <FormControlLabel
                   value="fortnightly"
-                  checked={
-                    timelineAndFunding.billing_interval === 2
-                  }
+                  checked={timelineAndFunding.billing_interval === 2}
                   control={<Radio />}
                   label="Fortnightly"
                 />

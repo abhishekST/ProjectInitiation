@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { revertAll } from '../../../store'
+import * as dayjs from 'dayjs'
 
 export interface TimelineAndFunding {
   estimated_timeline_from: string | null
@@ -11,7 +12,7 @@ export interface TimelineAndFunding {
 }
 
 const initialState: TimelineAndFunding = {
-  estimated_timeline_from: null,
+  estimated_timeline_from: dayjs.default().format('MM-DD-YYYY'),
   estimated_timeline_to: null,
   approved_hours: '0',
   billing_medium: null,
@@ -19,7 +20,7 @@ const initialState: TimelineAndFunding = {
 }
 
 export const timelineAndFundingSlice = createSlice({
-  name: 'timelin2023eAndFunding',
+  name: 'timelineAndFunding',
   initialState,
   extraReducers: (builder) => builder.addCase(revertAll, () => initialState),
   reducers: {
@@ -28,12 +29,18 @@ export const timelineAndFundingSlice = createSlice({
       action: PayloadAction<{ estimated_timeline_from: string | null }>
     ) => {
       state.estimated_timeline_from = action.payload.estimated_timeline_from
+      if (state.estimated_timeline_to !== null) {
+        state.approved_hours = String(dayjs.default(state.estimated_timeline_to).diff(dayjs.default(state.estimated_timeline_from), 'hour'))
+      }
     },
     changeEndDate: (
       state,
       action: PayloadAction<{ estimated_timeline_to: string | null }>
     ) => {
       state.estimated_timeline_to = action.payload.estimated_timeline_to
+      if (state.estimated_timeline_from !== null) {
+        state.approved_hours = String(dayjs.default(state.estimated_timeline_to).diff(dayjs.default(state.estimated_timeline_from), 'hour'))
+      }
     },
     changeProjectBilling: (
       state,
