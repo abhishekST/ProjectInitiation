@@ -18,10 +18,8 @@ import { type RootState } from '../../../store'
 import {
   changeBillingFrequency,
   changeEndDate,
-  changeNoOfDays,
   changeProjectBilling,
-  changeStartDate,
-  changeTotalApprovedHours
+  changeStartDate
 } from './reducer'
 
 const TimelineAndFunding = (): JSX.Element => {
@@ -44,11 +42,11 @@ const TimelineAndFunding = (): JSX.Element => {
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
               label="Start Date *"
-              value={timelineAndFunding.startDate}
+              value={timelineAndFunding.estimated_timeline_from}
               onChange={(value) => {
                 dispatch(
                   changeStartDate({
-                    startDate: value
+                    estimated_timeline_from: value
                   })
                 )
               }}
@@ -57,11 +55,11 @@ const TimelineAndFunding = (): JSX.Element => {
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
               label="End Date *"
-              value={timelineAndFunding.endDate}
+              value={timelineAndFunding.estimated_timeline_to}
               onChange={(value) => {
                 dispatch(
                   changeEndDate({
-                    endDate: value
+                    estimated_timeline_to: value
                   })
                 )
               }}
@@ -82,30 +80,16 @@ const TimelineAndFunding = (): JSX.Element => {
             id="full-width-text-field"
             label="Number of days"
             placeholder="0000"
-            type="number"
-            value={timelineAndFunding.noOfDays}
-            onChange={(event) => {
-              dispatch(
-                changeNoOfDays({
-                  noOfDays: Number(event.target.value)
-                })
-              )
-            }}
+            disabled
+            value={`${timelineAndFunding.approved_hours !== null ? Number(timelineAndFunding.approved_hours) / 24 : 0} Days}`}
           />
           <TextField
             required
             id="full-width-text-field"
             label="Total Approved Hours"
-            type="number"
             placeholder="0000"
-            value={timelineAndFunding.totalApprovedHours}
-            onChange={(event) => {
-              dispatch(
-                changeTotalApprovedHours({
-                  totalApprovedHours: Number(event.target.value)
-                })
-              )
-            }}
+            disabled
+            value={timelineAndFunding.approved_hours}
           />
         </Box>
 
@@ -130,7 +114,7 @@ const TimelineAndFunding = (): JSX.Element => {
               onChange={(event) => {
                 dispatch(
                   changeProjectBilling({
-                    projectBilling: event.target.value
+                    billing_medium: Number(event.target.value) ?? null
                   })
                 )
               }}
@@ -141,14 +125,14 @@ const TimelineAndFunding = (): JSX.Element => {
                   pl: '10px',
                   border: '1px solid grey',
                   backgroundColor:
-                    timelineAndFunding.projectBilling === 'redmine'
+                    timelineAndFunding.billing_medium === 0
                       ? '#e6f2ff'
                       : 'white'
                 }}
               >
                 <FormControlLabel
                   value="redmine"
-                  checked={timelineAndFunding.projectBilling === 'redmine'}
+                  checked={timelineAndFunding.billing_medium === 0}
                   control={<Radio />}
                   label="Redmine"
                 />
@@ -159,14 +143,14 @@ const TimelineAndFunding = (): JSX.Element => {
                   pl: '10px',
                   border: '1px solid grey',
                   backgroundColor:
-                    timelineAndFunding.projectBilling === 'zira'
+                    timelineAndFunding.billing_medium === 1
                       ? '#e6f2ff'
                       : 'white'
                 }}
               >
                 <FormControlLabel
                   value="zira"
-                  checked={timelineAndFunding.projectBilling === 'zira'}
+                  checked={timelineAndFunding.billing_medium === 1}
                   control={<Radio />}
                   label="Zira"
                 />
@@ -177,14 +161,14 @@ const TimelineAndFunding = (): JSX.Element => {
                   pl: '10px',
                   border: '1px solid grey',
                   backgroundColor:
-                    timelineAndFunding.projectBilling === 'tracker'
+                    timelineAndFunding.billing_medium === 2
                       ? '#e6f2ff'
                       : 'white'
                 }}
               >
                 <FormControlLabel
                   value="tracker"
-                  checked={timelineAndFunding.projectBilling === 'tracker'}
+                  checked={timelineAndFunding.billing_medium === 2}
                   control={<Radio />}
                   label="Tracker"
                 />
@@ -202,7 +186,7 @@ const TimelineAndFunding = (): JSX.Element => {
               onChange={(event) => {
                 dispatch(
                   changeBillingFrequency({
-                    billingFrequency: event.target.value
+                    billing_interval: Number(event.target.value) ?? null
                   })
                 )
               }}
@@ -213,14 +197,14 @@ const TimelineAndFunding = (): JSX.Element => {
                   pl: '10px',
                   border: '1px solid grey',
                   backgroundColor:
-                    timelineAndFunding.billingFrequency === 'monthly'
+                    timelineAndFunding.billing_interval === 0
                       ? '#e6f2ff'
                       : 'white'
                 }}
               >
                 <FormControlLabel
                   value="monthly"
-                  checked={timelineAndFunding.billingFrequency === 'monthly'}
+                  checked={timelineAndFunding.billing_interval === 0}
                   control={<Radio />}
                   label="Monthly"
                 />
@@ -231,14 +215,14 @@ const TimelineAndFunding = (): JSX.Element => {
                   pl: '10px',
                   border: '1px solid grey',
                   backgroundColor:
-                    timelineAndFunding.billingFrequency === 'hourly'
+                    timelineAndFunding.billing_interval === 1
                       ? '#e6f2ff'
                       : 'white'
                 }}
               >
                 <FormControlLabel
                   value="hourly"
-                  checked={timelineAndFunding.billingFrequency === 'hourly'}
+                  checked={timelineAndFunding.billing_interval === 1}
                   control={<Radio />}
                   label="Hourly"
                 />
@@ -249,7 +233,7 @@ const TimelineAndFunding = (): JSX.Element => {
                   pl: '10px',
                   border: '1px solid grey',
                   backgroundColor:
-                    timelineAndFunding.billingFrequency === 'fortnightly'
+                    timelineAndFunding.billing_interval === 2
                       ? '#e6f2ff'
                       : 'white'
                 }}
@@ -257,7 +241,7 @@ const TimelineAndFunding = (): JSX.Element => {
                 <FormControlLabel
                   value="fortnightly"
                   checked={
-                    timelineAndFunding.billingFrequency === 'fortnightly'
+                    timelineAndFunding.billing_interval === 2
                   }
                   control={<Radio />}
                   label="Fortnightly"

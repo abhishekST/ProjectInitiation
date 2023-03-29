@@ -25,27 +25,27 @@ export const timelineAndFundingSlice = createSlice({
   reducers: {
     changeStartDate: (
       state,
-      action: PayloadAction<{ startDate: string | null }>
+      action: PayloadAction<{ estimated_timeline_from: string | null }>
     ) => {
-      state.estimated_timeline_from = action.payload.startDate
+      state.estimated_timeline_from = action.payload.estimated_timeline_from
     },
     changeEndDate: (
       state,
-      action: PayloadAction<{ endDate: string | null }>
+      action: PayloadAction<{ estimated_timeline_to: string | null }>
     ) => {
-      state.estimated_timeline_to = action.payload.endDate
+      state.estimated_timeline_to = action.payload.estimated_timeline_to
     },
     changeProjectBilling: (
       state,
-      action: PayloadAction<{ projectBilling: number }>
+      action: PayloadAction<{ billing_medium: number }>
     ) => {
-      state.billing_medium = action.payload.projectBilling
+      state.billing_medium = action.payload.billing_medium
     },
     changeBillingFrequency: (
       state,
-      action: PayloadAction<{ billingFrequency: number }>
+      action: PayloadAction<{ billing_interval: number }>
     ) => {
-      state.billing_interval = action.payload.billingFrequency
+      state.billing_interval = action.payload.billing_interval
     }
   }
 })
